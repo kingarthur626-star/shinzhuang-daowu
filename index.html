@@ -26,8 +26,10 @@
     .menu-item h3 { margin: 0; color: #1c1e21; font-size: 18px; text-align: center; }
     .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; display: none; }
     .error { background-color: #ffebe9; color: #ce1c24; border: 1px solid #ffc6c3; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 15px; }
-    th, td { border: 1px solid #dee2e6; padding: 10px; text-align: center; }
+    
+    /* 💡 這裡幫您把表格的整體字體從 15px 微調小到 13.5px，精緻好閱讀 */
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 13.5px; }
+    th, td { border: 1px solid #dee2e6; padding: 8px 6px; text-align: center; }
     th { background-color: #f1f3f5; font-weight: bold; color: #495057; }
     .total-row { background-color: #e8f4fd; font-weight: bold; }
     .spinner { display: none; text-align: center; margin: 20px 0; color: #1877f2; font-weight: bold; font-size: 16px; }
@@ -176,8 +178,8 @@
       if(!response.success) { alert(response.message); return; }
       
       var data = response.data;
-      // 💡 重新排列組合表頭：目標放總數後面，兩邊標題皆改為「達成率」
-      var html = "<table><tr><th>年度</th><th>求道</th><th>目標</th><th>達成率</th><th>法會</th><th>目標</th><th>達成率</th></tr>";
+      // 💡 這裡把表頭的「達成率」全部改成「達成」
+      var html = "<table><tr><th>年度</th><th>求道</th><th>目標</th><th>達成</th><th>法會</th><th>目標</th><th>達成</th></tr>";
       
       var years = ['2022', '2023', '2024', '2025', '2026'];
       years.forEach(function(yr) {
@@ -192,7 +194,6 @@
           var dispQTar = (qTar === 0) ? "" : qTar;
           var dispFTar = (fTar === 0) ? "" : fTar;
           
-          // 計算達成率，若無實際人數或無目標則保持空白
           var dispQRate = "";
           if (q > 0 && qTar > 0) {
             dispQRate = Math.round((q / qTar) * 100) + "%";
@@ -203,7 +204,6 @@
             dispFRate = Math.round((f / fTar) * 100) + "%";
           }
           
-          // 💡 重新依序拼接儲存格欄位
           html += "<tr>" +
                   "<td>" + yr + "</td>" +
                   "<td>" + dispQ + "</td>" +
