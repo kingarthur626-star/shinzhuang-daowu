@@ -78,7 +78,7 @@
 
 <script>
   // ==================== 系統核心連線設定 ====================
-  // 💡 提示：如果建立全新部署，請記得更換下面這行長網址
+  // 💡 提示：更換新部署網址時，請更新下面這行網址
   var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzbVY0uMROLJumiDpqHwxIGSMFMnQRQIlCHYmjLvYaTZpKRQlcTX0wGFHPmbPaa7oAEZw/exec";
   // ========================================================
 
@@ -176,20 +176,21 @@
       if(!response.success) { alert(response.message); return; }
       
       var data = response.data;
-      var html = "<table><tr><th>年度</th><th>求道總人數</th><th>法會總人數</th><th>新民班總人數</th></tr>";
+      // 移除新民班表頭
+      var html = "<table><tr><th>年度</th><th>求道總人數</th><th>法會總人數</th></tr>";
       
-      var years = ['2022', '2024', '2025', '2026'];
+      // 包含 2022、2023、2024、2025、2026 年
+      var years = ['2022', '2023', '2024', '2025', '2026'];
       years.forEach(function(yr) {
         if(data[yr]) {
           var q = data[yr].qiudao;
           var f = data[yr].fahui;
-          var x = data[yr].xinmin;
           
           var dispQ = (q === 0) ? "" : q;
           var dispF = (f === 0) ? "" : f;
-          var dispX = (x === 0) ? "" : x;
           
-          html += "<tr><td>" + yr + " 年</td><td>" + dispQ + "</td><td>" + dispF + "</td><td>" + dispX + "</td></tr>";
+          // 只呈現求道與法會兩欄
+          html += "<tr><td>" + yr + " 年</td><td>" + dispQ + "</td><td>" + dispF + "</td></tr>";
         }
       });
       
