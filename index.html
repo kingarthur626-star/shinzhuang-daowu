@@ -56,7 +56,7 @@
   </div>
 </div>
 
-<!-- 頁面二：主選單（已移除目前登入提示及敘述文字） -->
+<!-- 頁面二：主選單 -->
 <div class="container" id="mainMenuPage" style="display:none;">
   <h2>新莊區 道務統計選單</h2>
   
@@ -65,7 +65,7 @@
       <h3 id="opt1Title">2026 壇名 道務</h3>
     </div>
     <div class="menu-item" onclick="loadThreeYearAnalysis()">
-      <h3>壇名 三年道務分析</h3>
+      <h3 id="opt2Title">壇名 三年道務分析</h3>
     </div>
   </div>
   <button class="btn btn-back" onclick="logout()">登出系統</button>
@@ -81,7 +81,8 @@
 
 <script>
   // ==================== 系統核心連線設定 ====================
-  var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzbVY0uMROLJumiDpqHwxIGSMFMnQRQIlCHYmjLvYaTZpKRQlcTX0wGFHPmbPaa7oAEZw/exec";
+  // 💡 請記得：如果您重新建了新的部署，要把下面這串網址換成最新的網址
+  var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmK-0m2LNTTC-nC34FYy85IRzHjh178ih-djQgncyPtnpeTZAEGFCwOKDhgLRM4LjyNQ/exec";
   // ========================================================
 
   var currentUser = { username: "", tanName: "", group: "" };
@@ -129,6 +130,7 @@
         
         var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
         document.getElementById("opt1Title").textContent = "2026 " + pureTanName + " 道務";
+        document.getElementById("opt2Title").textContent = pureTanName + " 三年道務分析";
       } else {
         errorBox.textContent = result.message;
         errorBox.style.display = "block";
@@ -136,7 +138,7 @@
     });
   }
 
-function load2026Overview() {
+  function load2026Overview() {
     var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
     showReportPage("2026 " + pureTanName + " 全年道務月報表");
     
@@ -153,14 +155,13 @@ function load2026Overview() {
         var fCount = stats[m].fahui;
         totalQ += qCount; totalF += fCount;
         
-        // 判斷：如果是 0 就顯示空白字串 ""，否則直接顯示純數字
+        // 0 顯示空白，不加「人」字
         var displayQ = (qCount === 0) ? "" : qCount;
         var displayF = (fCount === 0) ? "" : fCount;
         
         html += "<tr><td>" + m + " 月</td><td>" + displayQ + "</td><td>" + displayF + "</td></tr>";
       }
       
-      // 下方年度加總欄位：同樣如果是 0 就顯示空白，否則顯示純數字（不加人）
       var displayTotalQ = (totalQ === 0) ? "" : totalQ;
       var displayTotalF = (totalF === 0) ? "" : totalF;
       
@@ -173,8 +174,30 @@ function load2026Overview() {
   function loadThreeYearAnalysis() {
     var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
     showReportPage(pureTanName + " 三年道務分析");
-    document.getElementById("loadingSpinner").style.display = "none";
-    document.getElementById("reportContent").innerHTML = "<p style='text-align:center; color:#666;'>歷史分析功能對齊中...</p>";
+    
+    callBackend({ action: 'getAnalysis', tanName: currentUser.tanName, group: currentUser.group }, function(response) {
+      document.getElementById("loadingSpinner").style.display = "none";
+      if(!response.success) { alert(response.message); return; }
+      
+      var data = response.data;
+      var html = "<table><tr><th>年度</th><th>求道總人數</th><th>法會總人數</th><th>新民班總人數</th></tr>";
+      
+      var years = ['2024', '2025', '2026'];
+      years.forEach(function(yr) {
+        var q = data[yr].qiudao;
+        var f = data[yr].fahui;
+        var x = data[yr].xinmin;
+        
+        var dispQ = (q === 0) ? "" : q;
+        var dispF = (f === 0) ? "" : f;
+        var dispX = (x === 0) ? "" : x;
+        
+        html += "<tr><td>" + yr + " 年</td><td>" + dispQ + "</td><td>" + dispF + "</td><td>" + dispX + "</td></tr>";
+      });
+      
+      html += "</table>";
+      document.getElementById("reportContent").innerHTML = html;
+    });
   }
 
   function showReportPage(title) {
