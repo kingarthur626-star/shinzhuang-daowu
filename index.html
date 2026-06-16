@@ -7,7 +7,7 @@
   <style>
     body { font-family: "Microsoft JhengHei", Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 500px; box-sizing: border-box; }
-    .wide-container { max-width: 900px; width: 95%; } 
+    .wide-container { max-width: 900px; width: 95%; padding: 15px; } 
     h2 { color: #1a1a1a; margin-top: 0; text-align: center; margin-bottom: 20px; font-size: 24px; }
     .form-group { margin-bottom: 18px; text-align: left; }
     label { display: block; margin-bottom: 6px; color: #444; font-weight: bold; font-size: 14px; }
@@ -27,22 +27,24 @@
     .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; display: none; }
     .error { background-color: #ffebe9; color: #ce1c24; border: 1px solid #ffc6c3; }
     
+    /* 💡 限制外框寬度，不准它往外撐開 */
     .table-responsive { 
-      width: 100%; 
+      width: 100%;
+      max-width: 100%;
       overflow-x: auto; 
       margin-top: 15px; 
       border: 1px solid #dee2e6;
       background-color: #ffffff;
-      -webkit-overflow-scrolling: touch; 
+      display: inline-block; /* 💡 關鍵：強迫外框也貼緊表格大小 */
     }
     
-    /* 💡 width: max-content 強迫表格寬度縮到最小，完全貼合字型 */
-    table { width: max-content; border-collapse: collapse; background: white; font-size: 13.5px; } 
+    /* 💡 將 min-width 調小，並且強制寬度跟隨內容 */
+    table { width: auto; table-layout: auto; border-collapse: collapse; background: white; font-size: 13.5px; } 
     
-    /* 💡 white-space: nowrap 確保字絕對不會自動換行，padding 稍微內縮讓排版更緊湊 */
-    th, td { border: 1px solid #dee2e6; padding: 10px 12px; text-align: center; white-space: nowrap; }
+    /* 💡 縮小左右 padding (改成 6px)，讓格子緊緊夾住數字，不再空很大 */
+    th, td { border: 1px solid #dee2e6; padding: 10px 6px; text-align: center; white-space: nowrap; }
     
-    /* 強制讓第一欄鎖定在最左邊 */
+    /* 釘死第一欄 */
     table tr th:first-child,
     table tr td:first-child {
       position: -webkit-sticky !important;
@@ -166,8 +168,8 @@
       if(!response.success) { alert(response.message); return; }
       
       var stats = response.data;
-      // 💡 修正 2026 月報表第一行的顏色與鎖定背景
-      var html = "<table><thead><tr style='background-color:#e9ecef; font-weight:bold;'><th style='background-color:#d6d8db; position:-webkit-sticky; position:sticky; left:0;'>月份</th><th>求道人數</th><th>法會人數</th></tr></thead><tbody>";
+      // 💡 修正月報表：表頭強制改成深灰色底、純白文字
+      var html = "<table><thead><tr style='background-color:#525b64; color:#ffffff; font-weight:bold;'><th style='background-color:#41484f; color:#ffffff; position:-webkit-sticky; position:sticky; left:0;'>月份</th><th style='color:#ffffff;'>求道人數</th><th style='color:#ffffff;'>法會人數</th></tr></thead><tbody>";
       
       var totalQ = 0, totalF = 0;
       for(var m=1; m<=12; m++) {
@@ -209,8 +211,8 @@
       if(!response.success) { alert(response.message); return; }
       
       var data = response.data;
-      // 💡 修正歷年分析表第一行（表頭）的背景顏色
-      var html = "<table><thead><tr style='background-color:#e9ecef; font-weight:bold;'><th style='background-color:#d6d8db; position:-webkit-sticky; position:sticky; left:0;'>年度</th><th>求道</th><th>目標</th><th>達成</th><th>法會</th><th>目標</th><th>達成</th></tr></thead><tbody>";
+      // 💡 修正歷年分析表：表頭強制改成顯眼的深鐵灰色背景（#525b64）與純白字體（color:#ffffff），並鎖定左側交界
+      var html = "<table><thead><tr style='background-color:#525b64; color:#ffffff; font-weight:bold;'><th style='background-color:#41484f; color:#ffffff; position:-webkit-sticky; position:sticky; left:0;'>年度</th><th style='color:#ffffff;'>求道</th><th style='color:#ffffff;'>目標</th><th style='color:#ffffff;'>達成</th><th style='color:#ffffff;'>法會</th><th style='color:#ffffff;'>目標</th><th style='color:#ffffff;'>達成</th></tr></thead><tbody>";
       
       var years = ['2022', '2023', '2024', '2025', '2026'];
       var idx = 0;
