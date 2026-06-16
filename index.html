@@ -7,7 +7,7 @@
   <style>
     body { font-family: "Microsoft JhengHei", Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 500px; box-sizing: border-box; }
-    .wide-container { max-width: 700px; }
+    .wide-container { max-width: 800px; }
     h2 { color: #1a1a1a; margin-top: 0; text-align: center; margin-bottom: 20px; font-size: 24px; }
     .form-group { margin-bottom: 18px; text-align: left; }
     label { display: block; margin-bottom: 6px; color: #444; font-weight: bold; font-size: 14px; }
@@ -36,7 +36,6 @@
 </head>
 <body>
 
-<!-- 頁面一：登入 -->
 <div class="container" id="loginPage">
   <h2>新莊區 道務統計</h2>
   <div class="msg error" id="loginError"></div>
@@ -56,7 +55,6 @@
   </div>
 </div>
 
-<!-- 頁面二：主選單 -->
 <div class="container" id="mainMenuPage" style="display:none;">
   <h2>新莊區 道務統計選單</h2>
   
@@ -65,13 +63,12 @@
       <h3 id="opt1Title">2026 壇名 道務</h3>
     </div>
     <div class="menu-item" onclick="loadThreeYearAnalysis()">
-      <h3 id="opt2Title">壇名 三年道務分析</h3>
+      <h3 id="opt2Title">壇名 歷年道務分析</h3>
     </div>
   </div>
   <button class="btn btn-back" onclick="logout()">登出系統</button>
 </div>
 
-<!-- 頁面三：報表輸出 -->
 <div class="container wide-container" id="reportPage" style="display:none;">
   <h2 id="reportTitle">道務報表</h2>
   <div class="spinner" id="loadingSpinner">雲端資料庫連線中，請稍候...</div>
@@ -130,7 +127,7 @@
         
         var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
         document.getElementById("opt1Title").textContent = "2026 " + pureTanName + " 道務";
-        document.getElementById("opt2Title").textContent = pureTanName + " 三年道務分析";
+        document.getElementById("opt2Title").textContent = pureTanName + " 歷年道務分析";
       } else {
         errorBox.textContent = result.message;
         errorBox.style.display = "block";
@@ -155,7 +152,6 @@
         var fCount = stats[m].fahui;
         totalQ += qCount; totalF += fCount;
         
-        // 0 顯示空白，不加「人」字
         var displayQ = (qCount === 0) ? "" : qCount;
         var displayF = (fCount === 0) ? "" : fCount;
         
@@ -173,7 +169,7 @@
 
   function loadThreeYearAnalysis() {
     var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
-    showReportPage(pureTanName + " 三年道務分析");
+    showReportPage(pureTanName + " 歷年道務分析");
     
     callBackend({ action: 'getAnalysis', tanName: currentUser.tanName, group: currentUser.group }, function(response) {
       document.getElementById("loadingSpinner").style.display = "none";
@@ -182,17 +178,20 @@
       var data = response.data;
       var html = "<table><tr><th>年度</th><th>求道總人數</th><th>法會總人數</th><th>新民班總人數</th></tr>";
       
-      var years = ['2024', '2025', '2026'];
+      // 加入 2022 年循環顯示
+      var years = ['2022', '2024', '2025', '2026'];
       years.forEach(function(yr) {
-        var q = data[yr].qiudao;
-        var f = data[yr].fahui;
-        var x = data[yr].xinmin;
-        
-        var dispQ = (q === 0) ? "" : q;
-        var dispF = (f === 0) ? "" : f;
-        var dispX = (x === 0) ? "" : x;
-        
-        html += "<tr><td>" + yr + " 年</td><td>" + dispQ + "</td><td>" + dispF + "</td><td>" + dispX + "</td></tr>";
+        if(data[yr]) {
+          var q = data[yr].qiudao;
+          var f = data[yr].fahui;
+          var x = data[yr].xinmin;
+          
+          var dispQ = (q === 0) ? "" : q;
+          var dispF = (f === 0) ? "" : f;
+          var dispX = (x === 0) ? "" : x;
+          
+          html += "<tr><td>" + yr + " 年</td><td>" + dispQ + "</td><td>" + dispF + "</td><td>" + dispX + "</td></tr>";
+        }
       });
       
       html += "</table>";
