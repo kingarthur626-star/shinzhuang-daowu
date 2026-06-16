@@ -9,7 +9,6 @@
     .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 500px; box-sizing: border-box; }
     .wide-container { max-width: 700px; }
     h2 { color: #1a1a1a; margin-top: 0; text-align: center; margin-bottom: 20px; font-size: 24px; }
-    .subtitle { color: #666; text-align: center; margin-bottom: 20px; font-size: 14px; }
     .form-group { margin-bottom: 18px; text-align: left; }
     label { display: block; margin-bottom: 6px; color: #444; font-weight: bold; font-size: 14px; }
     input { width: 100%; padding: 12px; border: 1px solid #ccd0d5; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
@@ -24,8 +23,7 @@
     .menu-box { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
     .menu-item { padding: 18px; background: #f8f9fa; border: 1px solid #e4e6eb; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
     .menu-item:hover { background: #e7f3ff; border-color: #1877f2; }
-    .menu-item h3 { margin: 0 0 5px 0; color: #1c1e21; font-size: 18px; }
-    .menu-item p { margin: 0; color: #606770; font-size: 13px; }
+    .menu-item h3 { margin: 0; color: #1c1e21; font-size: 18px; text-align: center; }
     .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; display: none; }
     .error { background-color: #ffebe9; color: #ce1c24; border: 1px solid #ffc6c3; }
     table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 15px; }
@@ -38,6 +36,7 @@
 </head>
 <body>
 
+<!-- 頁面一：登入 -->
 <div class="container" id="loginPage">
   <h2>新莊區 道務統計</h2>
   <div class="msg error" id="loginError"></div>
@@ -57,23 +56,22 @@
   </div>
 </div>
 
+<!-- 頁面二：主選單（已移除目前登入提示及敘述文字） -->
 <div class="container" id="mainMenuPage" style="display:none;">
   <h2>新莊區 道務統計選單</h2>
-  <p class="subtitle" id="userIdentityNotice"></p>
   
   <div class="menu-box">
     <div class="menu-item" onclick="load2026Overview()">
       <h3 id="opt1Title">2026 壇名 道務</h3>
-      <p>自動帶出本年度 1~12 月每月求道與法會數據並自動加總</p>
     </div>
     <div class="menu-item" onclick="loadThreeYearAnalysis()">
       <h3>壇名 三年道務分析</h3>
-      <p>比對 2024 - 2026 三年數據，分析道務成長趨勢與小組加總</p>
     </div>
   </div>
   <button class="btn btn-back" onclick="logout()">登出系統</button>
 </div>
 
+<!-- 頁面三：報表輸出 -->
 <div class="container wide-container" id="reportPage" style="display:none;">
   <h2 id="reportTitle">道務報表</h2>
   <div class="spinner" id="loadingSpinner">雲端資料庫連線中，請稍候...</div>
@@ -82,9 +80,9 @@
 </div>
 
 <script>
- // ==================== 系統核心連線設定 ====================
-var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmK-0m2LNTTC-nC34FYy85IRzHjh178ih-djQgncyPtnpeTZAEGFCwOKDhgLRM4LjyNQ/exec";
-// ========================================================
+  // ==================== 系統核心連線設定 ====================
+  var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmK-0m2LNTTC-nC34FYy85IRzHjh178ih-djQgncyPtnpeTZAEGFCwOKDhgLRM4LjyNQ/exec";
+  // ========================================================
 
   var currentUser = { username: "", tanName: "", group: "" };
 
@@ -97,7 +95,7 @@ var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmK-0m2LNTTC-nC34FYy
     .then(res => res.json())
     .then(response => callback(response))
     .catch(err => {
-      alert("連線失敗，請檢查加密字元是否正確！\n原因: " + err.toString());
+      alert("連線失敗！原因: " + err.toString());
       document.getElementById("loadingSpinner").style.display = "none";
     });
   }
@@ -128,7 +126,6 @@ var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmK-0m2LNTTC-nC34FYy
         
         document.getElementById("loginPage").style.display = "none";
         document.getElementById("mainMenuPage").style.display = "block";
-        document.getElementById("userIdentityNotice").textContent = "目前登入佛堂：" + currentUser.tanName;
         
         var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
         document.getElementById("opt1Title").textContent = "2026 " + pureTanName + " 道務";
@@ -165,28 +162,9 @@ var GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmK-0m2LNTTC-nC34FYy
 
   function loadThreeYearAnalysis() {
     var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
-    showReportPage(pureTanName + " 跨年度道務分析與分組對比");
-    
-    callBackend({ action: 'getAnalysis', tanName: currentUser.tanName, group: currentUser.group }, function(response) {
-      document.getElementById("loadingSpinner").style.display = "none";
-      if(!response.success) { alert(response.message); return; }
-      
-      var data = response.data;
-      var html = "<h3>一、本壇（" + pureTanName + "）歷年縱向成長對比</h3>";
-      html += "<table><tr><th>年度</th><th>年度總求道人數</th><th>年度總法會人數</th></tr>";
-      ["2024", "2025", "2026"].forEach(function(year) {
-        html += "<tr><td>" + year + " 年</td><td>" + data.myTan[year].qiudao + " 人</td><td>" + data.myTan[year].fahui + " 人</td></tr>";
-      });
-      html += "</table><br><hr>";
-      
-      html += "<h3>二、第 " + currentUser.group + " 組 整體道務推動趨勢 (包含本組所有佛堂加總)</h3>";
-      html += "<table><tr><th>年度</th><th>全組總求道數</th><th>全組總法會數</th></tr>";
-      ["2024", "2025", "2026"].forEach(function(year) {
-        html += "<tr><td>" + year + " 年</td><td>" + data.myGroup[year].qiudao + " 人</td><td>" + data.myGroup[year].fahui + " 人</td></tr>";
-      });
-      html += "</table>";
-      document.getElementById("reportContent").innerHTML = html;
-    });
+    showReportPage(pureTanName + " 三年道務分析");
+    document.getElementById("loadingSpinner").style.display = "none";
+    document.getElementById("reportContent").innerHTML = "<p style='text-align:center; color:#666;'>歷史分析功能對齊中...</p>";
   }
 
   function showReportPage(title) {
