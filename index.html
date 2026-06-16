@@ -7,7 +7,7 @@
   <style>
     body { font-family: "Microsoft JhengHei", Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 500px; box-sizing: border-box; }
-    .wide-container { max-width: 850px; }
+    .wide-container { max-width: 900px; }
     h2 { color: #1a1a1a; margin-top: 0; text-align: center; margin-bottom: 20px; font-size: 24px; }
     .form-group { margin-bottom: 18px; text-align: left; }
     label { display: block; margin-bottom: 6px; color: #444; font-weight: bold; font-size: 14px; }
@@ -176,8 +176,8 @@
       if(!response.success) { alert(response.message); return; }
       
       var data = response.data;
-      // 💡 調整表頭：求道後面放達成率、法會後面放達成率
-      var html = "<table><tr><th>年度</th><th>求道</th><th>求道達成率</th><th>法會</th><th>法會達成率</th></tr>";
+      // 💡 重新排列組合表頭：目標放總數後面，兩邊標題皆改為「達成率」
+      var html = "<table><tr><th>年度</th><th>求道</th><th>目標</th><th>達成率</th><th>法會</th><th>目標</th><th>達成率</th></tr>";
       
       var years = ['2022', '2023', '2024', '2025', '2026'];
       years.forEach(function(yr) {
@@ -189,8 +189,10 @@
           
           var dispQ = (q === 0) ? "" : q;
           var dispF = (f === 0) ? "" : f;
+          var dispQTar = (qTar === 0) ? "" : qTar;
+          var dispFTar = (fTar === 0) ? "" : fTar;
           
-          // 計算達成率，若無資料、或目標為 0 則不顯示
+          // 計算達成率，若無實際人數或無目標則保持空白
           var dispQRate = "";
           if (q > 0 && qTar > 0) {
             dispQRate = Math.round((q / qTar) * 100) + "%";
@@ -201,11 +203,14 @@
             dispFRate = Math.round((f / fTar) * 100) + "%";
           }
           
+          // 💡 重新依序拼接儲存格欄位
           html += "<tr>" +
                   "<td>" + yr + "</td>" +
                   "<td>" + dispQ + "</td>" +
+                  "<td>" + dispQTar + "</td>" +
                   "<td>" + dispQRate + "</td>" +
                   "<td>" + dispF + "</td>" +
+                  "<td>" + dispFTar + "</td>" +
                   "<td>" + dispFRate + "</td>" +
                   "</tr>";
         }
