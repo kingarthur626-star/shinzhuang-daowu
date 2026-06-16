@@ -7,7 +7,7 @@
   <style>
     body { font-family: "Microsoft JhengHei", Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 500px; box-sizing: border-box; }
-    .wide-container { max-width: 900px; width: 95%; } /* 💡 自動偵測手機：寬度改用百分比動態調整 */
+    .wide-container { max-width: 900px; width: 95%; } 
     h2 { color: #1a1a1a; margin-top: 0; text-align: center; margin-bottom: 20px; font-size: 24px; }
     .form-group { margin-bottom: 18px; text-align: left; }
     label { display: block; margin-bottom: 6px; color: #444; font-weight: bold; font-size: 14px; }
@@ -27,18 +27,35 @@
     .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; display: none; }
     .error { background-color: #ffebe9; color: #ce1c24; border: 1px solid #ffc6c3; }
     
-    /* 💡 自動偵測手機防爆版：當手機畫面太窄時，表格會自動允許在手機內左右滑動，字體不縮水不跑版 */
+    /* 💡 響應式容器：防擠壓捲軸 */
     .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 15px; border-radius: 6px; border: 1px solid #dee2e6; }
-    table { width: 100%; border-collapse: collapse; background: white; font-size: 13.5px; min-width: 600px; } /* 設定最小寬度防文字被擠壓 */
-    th, td { border: 1px solid #dee2e6; padding: 10px 6px; text-align: center; }
-    th { background-color: #f1f3f5; font-weight: bold; color: #495057; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; font-size: 13.5px; min-width: 650px; } 
+    th, td { border-right: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; padding: 10px 6px; text-align: center; }
+    th { background-color: #f1f3f5; font-weight: bold; color: #495057; border-top: 1px solid #dee2e6; }
+    th:first-child, td:first-child { border-left: 1px solid #dee2e6; }
+
+    /* 💡 【關鍵技術：凍結第一欄】讓「月份/年度」永遠固定在最左邊，滑動時不消失 */
+    table th:first-child,
+    table td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2; /* 確保疊在最上面 */
+      box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* 加一條淡淡的右側陰影區隔 */
+    }
     
-    /* 💡 隔行變色（斑馬紋）：偶數行自動帶入極淡的清新灰色，閱讀超輕鬆 */
-    table tr:nth-child(even) { background-color: #f8f9fa; }
-    /* 💡 滑鼠滑過或手指點到時，該行會自動亮起淡藍色，方便視線追蹤 */
-    table tr:hover { background-color: #f1f8ff; }
+    /* 💡 修正蘋果手機（iPhone）與安卓的斑馬紋：強制指定背景色，並將顏色稍微加深 */
+    table tr:nth-child(odd) td { background-color: #ffffff; } /* 奇數行純白 */
+    table tr:nth-child(even) td { background-color: #f2f4f7; } /* 偶數行改為較明顯的莫蘭迪淡灰藍 */
     
-    .total-row { background-color: #e8f4fd !important; font-weight: bold; }
+    /* 💡 當凍結第一欄時，標頭的左上角格子也必須要有固定底色，否則會變透明 */
+    table th:first-child { background-color: #e9ecef !important; }
+    table tr:nth-child(odd) td:first-child { background-color: #ffffff !important; }
+    table tr:nth-child(even) td:first-child { background-color: #f2f4f7 !important; }
+
+    /* 滑鼠滑過或手指點到時的亮色效果 */
+    table tr:hover td { background-color: #e7f3ff !important; }
+    
+    .total-row td { background-color: #e8f4fd !important; font-weight: bold; }
     .spinner { display: none; text-align: center; margin: 20px 0; color: #1877f2; font-weight: bold; font-size: 16px; }
     hr { border: 0; height: 1px; background: #eee; margin: 25px 0; }
   </style>
@@ -84,7 +101,6 @@
 <div class="container wide-container" id="reportPage" style="display:none;">
   <h2 id="reportTitle">道務報表</h2>
   <div class="spinner" id="loadingSpinner">雲端資料庫連線中，請稍候...</div>
-  <!-- 💡 這裡包裹了一層響應式容器 -->
   <div class="table-responsive">
     <div id="reportContent"></div>
   </div>
