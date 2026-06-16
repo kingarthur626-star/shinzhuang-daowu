@@ -27,55 +27,36 @@
     .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; display: none; }
     .error { background-color: #ffebe9; color: #ce1c24; border: 1px solid #ffc6c3; }
     
-    /* 💡 【專治蘋果手機的關鍵容器優化】 */
     .table-responsive { 
       width: 100%; 
       overflow-x: auto; 
-      position: relative; /* 強迫蘋果內核重新計算定位 */
-      -webkit-overflow-scrolling: touch; 
       margin-top: 15px; 
-      border: 1px solid #dee2e6; 
+      border: 1px solid #dee2e6;
+      background-color: #ffffff;
+      -webkit-overflow-scrolling: touch; 
     }
     
-    /* 💡 為了防範蘋果 Safari 邊框錯位，改用獨立邊框與背景鎖定 */
-    table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; font-size: 13.5px; min-width: 650px; } 
-    th, td { border-right: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; padding: 10px 6px; text-align: center; }
-    th { background-color: #e9ecef; font-weight: bold; color: #495057; border-top: 1px solid #dee2e6; }
-    th:first-child, td:first-child { border-left: 1px solid #dee2e6; }
+    /* 💡 width: max-content 強迫表格寬度縮到最小，完全貼合字型 */
+    table { width: max-content; border-collapse: collapse; background: white; font-size: 13.5px; } 
     
-    /* 💡 斑馬紋強制加深、強制指定背景 */
-    table tr:nth-child(odd) td { background-color: #ffffff !important; }
-    table tr:nth-child(even) td { background-color: #e9ecef !important; }
-
-    /* 💡 【終極凍結第一欄指令】針對 iOS 核心進行絕對覆蓋 */
+    /* 💡 white-space: nowrap 確保字絕對不會自動換行，padding 稍微內縮讓排版更緊湊 */
+    th, td { border: 1px solid #dee2e6; padding: 10px 12px; text-align: center; white-space: nowrap; }
+    
+    /* 強制讓第一欄鎖定在最左邊 */
     table tr th:first-child,
     table tr td:first-child {
-      position: -webkit-sticky !important; /* 💡 專門寫給蘋果手機看的前綴指令 */
+      position: -webkit-sticky !important;
       position: sticky !important;
       left: 0 !important;
-      z-index: 99 !important; /* 圖層拉到最上層，絕不被蓋住 */
+      z-index: 10 !important;
     }
 
-    /* 💡 確保凍結欄位在左右滑動時，背景色能遮蓋住後方飄過去的文字（蘋果手機特別需要這個） */
-    table tr th:first-child { background-color: #d6d8db !important; }
-    table tr:nth-child(odd) td:first-child { background-color: #ffffff !important; }
-    table tr:nth-child(even) td:first-child { background-color: #e9ecef !important; }
-    
-    /* 年度加總欄位醒目化 */
-    .total-row td { background-color: #cce5ff !important; font-weight: bold; }
-    .total-row td:first-child { background-color: #cce5ff !important; }
-
-    /* 觸碰高亮 */
-    table tr:hover td { background-color: #b8daff !important; }
-    table tr:hover td:first-child { background-color: #b8daff !important; }
-    
     .spinner { display: none; text-align: center; margin: 20px 0; color: #1877f2; font-weight: bold; font-size: 16px; }
     hr { border: 0; height: 1px; background: #eee; margin: 25px 0; }
   </style>
 </head>
 <body>
 
-<!-- 頁面一：登入 -->
 <div class="container" id="loginPage">
   <h2>新莊區 道務統計</h2>
   <div class="msg error" id="loginError"></div>
@@ -95,7 +76,6 @@
   </div>
 </div>
 
-<!-- 頁面二：主選單 -->
 <div class="container" id="mainMenuPage" style="display:none;">
   <h2>新莊區 道務統計選單</h2>
   
@@ -110,7 +90,6 @@
   <button class="btn btn-back" onclick="logout()">登出系統</button>
 </div>
 
-<!-- 頁面三：報表輸出 -->
 <div class="container wide-container" id="reportPage" style="display:none;">
   <h2 id="reportTitle">道務報表</h2>
   <div class="spinner" id="loadingSpinner">雲端資料庫連線中，請稍候...</div>
@@ -187,9 +166,10 @@
       if(!response.success) { alert(response.message); return; }
       
       var stats = response.data;
-      var html = "<table><tr><th>月份</th><th>求道人數</th><th>法會人數</th></tr>";
-      var totalQ = 0, totalF = 0;
+      // 💡 修正 2026 月報表第一行的顏色與鎖定背景
+      var html = "<table><thead><tr style='background-color:#e9ecef; font-weight:bold;'><th style='background-color:#d6d8db; position:-webkit-sticky; position:sticky; left:0;'>月份</th><th>求道人數</th><th>法會人數</th></tr></thead><tbody>";
       
+      var totalQ = 0, totalF = 0;
       for(var m=1; m<=12; m++) {
         var qCount = stats[m].qiudao;
         var fCount = stats[m].fahui;
@@ -197,15 +177,25 @@
         
         var displayQ = (qCount === 0) ? "" : qCount;
         var displayF = (fCount === 0) ? "" : fCount;
+        var rowBg = (m % 2 === 0) ? "#e9ecef" : "#ffffff";
         
-        html += "<tr><td>" + m + " 月</td><td>" + displayQ + "</td><td>" + displayF + "</td></tr>";
+        html += "<tr style='background-color:" + rowBg + ";'>" +
+                "<td style='background-color:" + rowBg + "; position:-webkit-sticky; position:sticky; left:0; font-weight:bold;'>" + m + " 月</td>" +
+                "<td>" + displayQ + "</td>" +
+                "<td>" + displayF + "</td>" +
+                "</tr>";
       }
       
       var displayTotalQ = (totalQ === 0) ? "" : totalQ;
       var displayTotalF = (totalF === 0) ? "" : totalF;
       
-      html += "<tr class='total-row'><td>年度加總</td><td>" + displayTotalQ + "</td><td>" + displayTotalF + "</td></tr>";
-      html += "</table>";
+      html += "<tr style='background-color:#cce5ff; font-weight:bold;'>" +
+              "<td style='background-color:#cce5ff; position:-webkit-sticky; position:sticky; left:0;'>年度加總</td>" +
+              "<td>" + displayTotalQ + "</td>" +
+              "<td>" + displayTotalF + "</td>" +
+              "</tr>";
+              
+      html += "</tbody></table>";
       document.getElementById("reportContent").innerHTML = html;
     });
   }
@@ -219,11 +209,15 @@
       if(!response.success) { alert(response.message); return; }
       
       var data = response.data;
-      var html = "<table><tr><th>年度</th><th>求道</th><th>目標</th><th>達成</th><th>法會</th><th>目標</th><th>達成</th></tr>";
+      // 💡 修正歷年分析表第一行（表頭）的背景顏色
+      var html = "<table><thead><tr style='background-color:#e9ecef; font-weight:bold;'><th style='background-color:#d6d8db; position:-webkit-sticky; position:sticky; left:0;'>年度</th><th>求道</th><th>目標</th><th>達成</th><th>法會</th><th>目標</th><th>達成</th></tr></thead><tbody>";
       
       var years = ['2022', '2023', '2024', '2025', '2026'];
+      var idx = 0;
+      
       years.forEach(function(yr) {
         if(data[yr]) {
+          idx++;
           var q = data[yr].qiudao;
           var f = data[yr].fahui;
           var qTar = data[yr].qiudaoTarget;
@@ -235,17 +229,15 @@
           var dispFTar = (fTar === 0) ? "" : fTar;
           
           var dispQRate = "";
-          if (q > 0 && qTar > 0) {
-            dispQRate = Math.round((q / qTar) * 100) + "%";
-          }
+          if (q > 0 && qTar > 0) dispQRate = Math.round((q / qTar) * 100) + "%";
           
           var dispFRate = "";
-          if (f > 0 && fTar > 0) {
-            dispFRate = Math.round((f / fTar) * 100) + "%";
-          }
+          if (f > 0 && fTar > 0) dispFRate = Math.round((f / fTar) * 100) + "%";
           
-          html += "<tr>" +
-                  "<td>" + yr + "</td>" +
+          var rowBg = (idx % 2 === 0) ? "#e9ecef" : "#ffffff";
+          
+          html += "<tr style='background-color:" + rowBg + ";'>" +
+                  "<td style='background-color:" + rowBg + "; position:-webkit-sticky; position:sticky; left:0; font-weight:bold;'>" + yr + "</td>" +
                   "<td>" + dispQ + "</td>" +
                   "<td>" + dispQTar + "</td>" +
                   "<td>" + dispQRate + "</td>" +
@@ -256,7 +248,7 @@
         }
       });
       
-      html += "</table>";
+      html += "</tbody></table>";
       document.getElementById("reportContent").innerHTML = html;
     });
   }
