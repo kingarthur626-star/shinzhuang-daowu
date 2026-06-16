@@ -27,35 +27,39 @@
     .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; display: none; }
     .error { background-color: #ffebe9; color: #ce1c24; border: 1px solid #ffc6c3; }
     
-    /* 💡 響應式容器：防擠壓捲軸 */
-    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 15px; border-radius: 6px; border: 1px solid #dee2e6; }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; font-size: 13.5px; min-width: 650px; } 
-    th, td { border-right: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; padding: 10px 6px; text-align: center; }
-    th { background-color: #f1f3f5; font-weight: bold; color: #495057; border-top: 1px solid #dee2e6; }
-    th:first-child, td:first-child { border-left: 1px solid #dee2e6; }
+    /* 💡 響應式外框：允許橫向捲動 */
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 15px; border: 1px solid #dee2e6; }
+    
+    /* 💡 改回 collapse 緊密結構，確保手機瀏覽器能精準定位釘住第一欄 */
+    table { width: 100%; border-collapse: collapse; background: white; font-size: 13.5px; min-width: 650px; } 
+    th, td { border: 1px solid #dee2e6; padding: 10px 6px; text-align: center; }
+    th { background-color: #e9ecef; font-weight: bold; color: #495057; }
+    
+    /* 💡 【斑馬紋深色優化】顯著加深灰色列（改用 #e2e6ea 色調），確保跨平台肉眼清晰可見 */
+    table tr:nth-child(odd) td { background-color: #ffffff !important; }
+    table tr:nth-child(even) td { background-color: #e9ecef !important; }
 
-    /* 💡 【關鍵技術：凍結第一欄】讓「月份/年度」永遠固定在最左邊，滑動時不消失 */
-    table th:first-child,
-    table td:first-child {
-      position: sticky;
-      left: 0;
-      z-index: 2; /* 確保疊在最上面 */
-      box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* 加一條淡淡的右側陰影區隔 */
+    /* 💡 【強力凍結機制】將第一欄（th 與 td）強制釘死在最左邊，不隨捲軸滑走 */
+    table tr th:first-child,
+    table tr td:first-child {
+      position: sticky !important;
+      left: 0 !important;
+      z-index: 10 !important; /* 確保懸浮在最上層 */
     }
-    
-    /* 💡 修正蘋果手機（iPhone）與安卓的斑馬紋：強制指定背景色，並將顏色稍微加深 */
-    table tr:nth-child(odd) td { background-color: #ffffff; } /* 奇數行純白 */
-    table tr:nth-child(even) td { background-color: #f2f4f7; } /* 偶數行改為較明顯的莫蘭迪淡灰藍 */
-    
-    /* 💡 當凍結第一欄時，標頭的左上角格子也必須要有固定底色，否則會變透明 */
-    table th:first-child { background-color: #e9ecef !important; }
-    table tr:nth-child(odd) td:first-child { background-color: #ffffff !important; }
-    table tr:nth-child(even) td:first-child { background-color: #f2f4f7 !important; }
 
-    /* 滑鼠滑過或手指點到時的亮色效果 */
-    table tr:hover td { background-color: #e7f3ff !important; }
+    /* 💡 凍結欄位在捲動時需要有獨立背景色，否則底下的文字滑過去會重疊穿透 */
+    table tr th:first-child { background-color: #d6d8db !important; }
+    table tr:nth-child(odd) td:first-child { background-color: #ffffff !important; }
+    table tr:nth-child(even) td:first-child { background-color: #e9ecef !important; }
     
-    .total-row td { background-color: #e8f4fd !important; font-weight: bold; }
+    /* 年度加總欄位醒目化 */
+    .total-row td { background-color: #cce5ff !important; font-weight: bold; }
+    .total-row td:first-child { background-color: #cce5ff !important; }
+
+    /* 滑鼠與手指觸碰時的微幅高亮 */
+    table tr:hover td { background-color: #b8daff !important; }
+    table tr:hover td:first-child { background-color: #b8daff !important; }
+    
     .spinner { display: none; text-align: center; margin: 20px 0; color: #1877f2; font-weight: bold; font-size: 16px; }
     hr { border: 0; height: 1px; background: #eee; margin: 25px 0; }
   </style>
