@@ -3,226 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>新莊區 道務統計</title>
+  <title>誠字班執行回報系統</title>
   <style>
-    body { font-family: "Microsoft JhengHei", Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 500px; box-sizing: border-box; }
-    .wide-container { max-width: 800px; }
-    h2 { color: #1a1a1a; margin-top: 0; text-align: center; margin-bottom: 20px; font-size: 24px; }
-    .form-group { margin-bottom: 18px; text-align: left; }
-    label { display: block; margin-bottom: 6px; color: #444; font-weight: bold; font-size: 14px; }
-    input { width: 100%; padding: 12px; border: 1px solid #ccd0d5; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-    input:focus { border-color: #1877f2; outline: none; }
-    .btn { width: 100%; padding: 12px; background-color: #1877f2; border: none; color: white; font-size: 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-    .btn:hover { background-color: #166fe5; }
-    .btn-back { background-color: #65676b; margin-top: 15px; }
-    .btn-back:hover { background-color: #545659; }
-    .links-group { margin-top: 20px; display: flex; justify-content: space-between; font-size: 14px; }
-    .links-group a { color: #1877f2; text-decoration: none; cursor: pointer; }
-    .links-group a:hover { text-decoration: underline; }
-    .menu-box { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-    .menu-item { padding: 18px; background: #f8f9fa; border: 1px solid #e4e6eb; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
-    .menu-item:hover { background: #e7f3ff; border-color: #1877f2; }
-    .menu-item h3 { margin: 0; color: #1c1e21; font-size: 18px; text-align: center; }
-    .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; display: none; }
-    .error { background-color: #ffebe9; color: #ce1c24; border: 1px solid #ffc6c3; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 15px; }
-    th, td { border: 1px solid #dee2e6; padding: 10px; text-align: center; }
-    th { background-color: #f1f3f5; font-weight: bold; color: #495057; }
-    .total-row { background-color: #e8f4fd; font-weight: bold; }
-    .spinner { display: none; text-align: center; margin: 20px 0; color: #1877f2; font-weight: bold; font-size: 16px; }
-    hr { border: 0; height: 1px; background: #eee; margin: 25px 0; }
+    body { font-family: "微軟正黑體", sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+    input, select { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+    button:hover { background-color: #45a049; }
+    .link-btn { background: none; color: #0066cc; border: none; cursor: pointer; text-decoration: underline; padding: 0; margin-top: 15px; font-size: 14px; }
+    .hidden { display: none; }
+    .radio-group { text-align: left; margin: 10px 0; padding-left: 5%; font-size: 15px; }
+    .radio-group label { margin-right: 10px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-<div class="container" id="loginPage">
-  <h2>新莊區 道務統計</h2>
-  <div class="msg error" id="loginError"></div>
-  <div class="form-group">
-    <label>登入帳號</label>
-    <input type="text" id="username" placeholder="請輸入帳號">
+  <div class="container" id="loginBlock">
+    <h2>系統登入</h2>
+    <input type="text" id="loginTanName" placeholder="請輸入壇名">
+    <input type="password" id="loginPassword" placeholder="請輸入密碼 (手機號碼)">
+    <button onclick="login()">登入</button>
+    <button class="link-btn" onclick="toggleForm('applyBlock')">還沒有帳號？點此申請</button>
   </div>
-  <div class="form-group">
-    <label>登入密碼</label>
-    <input type="password" id="password" placeholder="請輸入密碼">
-  </div>
-  <button class="btn" id="loginBtn" onclick="submitLogin()">登 入</button>
-  
-  <div class="links-group">
-    <a onclick="showActionNotice('apply')">申請帳號</a>
-    <a onclick="showActionNotice('forgot')">忘記密碼</a>
-  </div>
-</div>
 
-<div class="container" id="mainMenuPage" style="display:none;">
-  <h2>新莊區 道務統計選單</h2>
-  
-  <div class="menu-box">
-    <div class="menu-item" onclick="load2026Overview()">
-      <h3 id="opt1Title">2026 壇名 道務</h3>
+  <div class="container hidden" id="applyBlock">
+    <h2>申請帳號</h2>
+    <div class="radio-group">
+      <label><input type="radio" name="group" value="第1組" checked> 第1組</label>
+      <label><input type="radio" name="group" value="第2組"> 第2組</label>
+      <label><input type="radio" name="group" value="第3組"> 第3組</label>
     </div>
-    <div class="menu-item" onclick="loadThreeYearAnalysis()">
-      <h3 id="opt2Title">壇名 歷年道務分析</h3>
-    </div>
+    <input type="text" id="applyTanName" placeholder="壇名" required>
+    <input type="text" id="applyName" placeholder="真實姓名" required>
+    <input type="email" id="applyAccount" placeholder="Email 帳號 (選填)">
+    <input type="text" id="applyPassword" placeholder="手機號碼 (將作為登入密碼)" required>
+    <button onclick="sendApp()" id="submitBtn">送出申請</button>
+    <button class="link-btn" onclick="toggleForm('loginBlock')">返回登入</button>
   </div>
-  <button class="btn btn-back" onclick="logout()">登出系統</button>
-</div>
 
-<div class="container wide-container" id="reportPage" style="display:none;">
-  <h2 id="reportTitle">道務報表</h2>
-  <div class="spinner" id="loadingSpinner">雲端資料庫連線中，請稍候...</div>
-  <div id="reportContent"></div>
-  <button class="btn btn-back" onclick="backToMenu()">返回主選單</button>
-</div>
+  <script>
+    // ⚠️ 必填：請將下方的網址換成您在 GAS 部署得到的網址
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz34bQpTO3Rd5CipJH28fl2JByiPP_UgnPqoRd9Pw3p-vDv01qcBsvac82a0XTysS70mQ/exec"; 
 
-<script>
-  // ==================== 系統核心連線設定 ====================
-  // 💡 請記得：重新建立新部署後，請把下面這串網址換成最新的 exec 網址
-  var GAS_API_URL = "https://script.google.com/macros/s/AKfycbxC3IdeNiM8SVkZh7SO3H2ax_wsTSIFfH6o-0ZiyRadSmGi5vzLLEeDldtYzIykTfSsGg/exec";
-  // ========================================================
-
-  var currentUser = { username: "", tanName: "", group: "" };
-
-  function callBackend(data, callback) {
-    fetch(GAS_API_URL, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "text/plain;charset=utf-8" }
-    })
-    .then(res => res.json())
-    .then(response => callback(response))
-    .catch(err => {
-      alert("連線失敗！原因: " + err.toString());
-      document.getElementById("loadingSpinner").style.display = "none";
-    });
-  }
-
-  function submitLogin() {
-    var user = document.getElementById("username").value;
-    var pass = document.getElementById("password").value;
-    var errorBox = document.getElementById("loginError");
-    var loginBtn = document.getElementById("loginBtn");
-    
-    if(!user || !pass) {
-      errorBox.textContent = "請填寫完帳號與密碼！";
-      errorBox.style.display = "block";
-      return;
+    // 切換顯示區塊
+    function toggleForm(showId) {
+      document.getElementById('loginBlock').classList.add('hidden');
+      document.getElementById('applyBlock').classList.add('hidden');
+      document.getElementById(showId).classList.remove('hidden');
     }
-    errorBox.style.display = "none";
-    loginBtn.disabled = true;
-    loginBtn.textContent = "安全驗證中...";
-    
-    callBackend({ action: 'login', username: user, password: pass }, function(result) {
-      loginBtn.disabled = false;
-      loginBtn.textContent = "登 入";
-      
-      if(result.success) {
-        currentUser.username = result.username;
-        currentUser.tanName = result.tanName;
-        currentUser.group = result.group;
-        
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("mainMenuPage").style.display = "block";
-        
-        var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
-        document.getElementById("opt1Title").textContent = "2026 " + pureTanName + " 道務";
-        document.getElementById("opt2Title").textContent = pureTanName + " 歷年道務分析";
-      } else {
-        errorBox.textContent = result.message;
-        errorBox.style.display = "block";
+
+    // 登入邏輯 (保留給您串接後端)
+    function login() {
+      const tanName = document.getElementById('loginTanName').value;
+      const password = document.getElementById('loginPassword').value;
+      if(!tanName || !password) {
+        alert("請輸入壇名與密碼！");
+        return;
       }
-    });
-  }
+      // 這裡放入您原本呼叫 GAS 取得報表資料的 fetch 程式碼
+      alert("這裡將發送登入請求...");
+    }
 
-  function load2026Overview() {
-    var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
-    showReportPage("2026 " + pureTanName + " 全年道務月報表");
-    
-    callBackend({ action: 'get2026', tanName: currentUser.tanName }, function(response) {
-      document.getElementById("loadingSpinner").style.display = "none";
-      if(!response.success) { alert(response.message); return; }
+    // 傳送申請資料
+    async function sendApp() {
+      const btn = document.getElementById('submitBtn');
       
-      var stats = response.data;
-      var html = "<table><tr><th>月份</th><th>求道人數</th><th>法會人數</th></tr>";
-      var totalQ = 0, totalF = 0;
-      
-      for(var m=1; m<=12; m++) {
-        var qCount = stats[m].qiudao;
-        var fCount = stats[m].fahui;
-        totalQ += qCount; totalF += fCount;
-        
-        var displayQ = (qCount === 0) ? "" : qCount;
-        var displayF = (fCount === 0) ? "" : fCount;
-        
-        html += "<tr><td>" + m + " 月</td><td>" + displayQ + "</td><td>" + displayF + "</td></tr>";
-      }
-      
-      var displayTotalQ = (totalQ === 0) ? "" : totalQ;
-      var displayTotalF = (totalF === 0) ? "" : totalF;
-      
-      html += "<tr class='total-row'><td>年度加總</td><td>" + displayTotalQ + "</td><td>" + displayTotalF + "</td></tr>";
-      html += "</table>";
-      document.getElementById("reportContent").innerHTML = html;
-    });
-  }
-
-  function loadThreeYearAnalysis() {
-    var pureTanName = currentUser.tanName.split("_")[1] || currentUser.tanName;
-    showReportPage(pureTanName + " 歷年道務分析");
-    
-    callBackend({ action: 'getAnalysis', tanName: currentUser.tanName, group: currentUser.group }, function(response) {
-      document.getElementById("loadingSpinner").style.display = "none";
-      if(!response.success) { alert(response.message); return; }
-      
-      var data = response.data;
-      var html = "<table><tr><th>年度</th><th>求道總人數</th><th>法會總人數</th></tr>";
-      
-      var years = ['2022', '2023', '2024', '2025', '2026'];
-      years.forEach(function(yr) {
-        if(data[yr]) {
-          var q = data[yr].qiudao;
-          var f = data[yr].fahui;
-          
-          var dispQ = (q === 0) ? "" : q;
-          var dispF = (f === 0) ? "" : f;
-          
-          html += "<tr><td>" + yr + " 年</td><td>" + dispQ + "</td><td>" + dispF + "</td></tr>";
-        }
-      });
-      
-      html += "</table>";
-      document.getElementById("reportContent").innerHTML = html;
-    });
-  }
-
-  function showReportPage(title) {
-    document.getElementById("mainMenuPage").style.display = "none";
-    document.getElementById("reportPage").style.display = "block";
-    document.getElementById("reportTitle").textContent = title;
-    document.getElementById("reportContent").innerHTML = "";
-    document.getElementById("loadingSpinner").style.display = "block";
-  }
-
-  function backToMenu() {
-    document.getElementById("reportPage").style.display = "none";
-    document.getElementById("mainMenuPage").style.display = "block";
-  }
-
-  function logout() {
-    document.getElementById("username").value = "";
-    document.getElementById("password").value = "";
-    document.getElementById("mainMenuPage").style.display = "none";
-    document.getElementById("loginPage").style.display = "block";
-    document.getElementById("loginError").style.display = "none";
-  }
-
-  function showActionNotice(type) {
-    callBackend({ action: 'accountAction', type: type }, function(res) {
-      alert(res.msg);
-    });
-  }
-</script>
-
-</body>
-</html>
+      const data = {
+        action: 'apply',
+        group: document.querySelector('input[name="group"]:checked').value,
+        tan: document.getElementById('applyTanName').value,
+        name: document.getElementById('applyName').value,
+        account: document.getElementById('applyAccount').value,
+        password: document.getElementById('
