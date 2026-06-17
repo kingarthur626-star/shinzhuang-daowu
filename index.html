@@ -88,6 +88,7 @@
       margin-top: 8px;
       font-size: 14px;
       color: #64748b;
+      line-height: 1.5;
     }
 
     .btn {
@@ -114,6 +115,13 @@
 
     .link-row {
       text-align: right;
+      margin-top: 24px;
+    }
+
+    .login-link-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-top: 24px;
     }
 
@@ -221,28 +229,19 @@
 
       <div class="form-group">
         <label for="loginAccount">登入帳號</label>
-        <input
-          id="loginAccount"
-          type="email"
-          placeholder="請輸入帳號"
-          autocomplete="username"
-        />
+        <input id="loginAccount" type="email" placeholder="請輸入帳號" autocomplete="username" />
       </div>
 
       <div class="form-group">
         <label for="loginPassword">登入密碼</label>
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="請輸入密碼"
-          autocomplete="current-password"
-        />
+        <input id="loginPassword" type="password" placeholder="請輸入密碼" autocomplete="current-password" />
       </div>
 
       <button class="btn" id="loginBtn" onclick="handleLogin()">登入</button>
 
-      <div class="link-row">
+      <div class="login-link-row">
         <a class="text-link" onclick="showRegisterPage()">申請帳號</a>
+        <a class="text-link" onclick="showForgotPage()">忘記密碼</a>
       </div>
     </div>
 
@@ -282,36 +281,78 @@
 
       <div class="form-group">
         <label for="registerName">姓名：</label>
-        <input
-          id="registerName"
-          type="text"
-          placeholder="請輸入真實姓名"
-          autocomplete="name"
-        />
+        <input id="registerName" type="text" placeholder="請輸入真實姓名" autocomplete="name" />
       </div>
 
       <div class="form-group">
         <label for="registerAccount">帳號：</label>
-        <input
-          id="registerAccount"
-          type="email"
-          placeholder="例如: example@gmail.com"
-          autocomplete="email"
-        />
+        <input id="registerAccount" type="email" placeholder="例如: example@gmail.com" autocomplete="email" />
       </div>
 
       <div class="form-group">
         <label for="registerPassword">密碼：</label>
-        <input
-          id="registerPassword"
-          type="password"
-          placeholder="例如: 912345678"
-          inputmode="numeric"
-        />
+        <input id="registerPassword" type="password" placeholder="例如: 912345678" inputmode="numeric" />
         <div class="hint">請輸入手機號碼，開頭不含0</div>
       </div>
 
       <button class="btn" id="registerBtn" onclick="handleRegister()">送出申請</button>
+
+      <div class="link-row">
+        <a class="text-link" onclick="showLoginPage()">返回登入</a>
+      </div>
+    </div>
+
+    <!-- 忘記密碼 / 變更密碼畫面 -->
+    <div class="card hidden" id="forgotPage">
+      <h1>忘記密碼 / 變更密碼</h1>
+
+      <div id="forgotMessage" class="message"></div>
+
+      <div class="form-group">
+        <div class="label">組別：</div>
+
+        <div class="radio-row">
+          <label class="radio-item">
+            <input type="radio" name="forgotGroup" value="1" onchange="handleForgotGroupChange()" />
+            第1組
+          </label>
+
+          <label class="radio-item">
+            <input type="radio" name="forgotGroup" value="2" onchange="handleForgotGroupChange()" />
+            第2組
+          </label>
+
+          <label class="radio-item">
+            <input type="radio" name="forgotGroup" value="3" onchange="handleForgotGroupChange()" />
+            第3組
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="forgotTempleSelect">壇名：</label>
+        <select id="forgotTempleSelect" disabled>
+          <option value="">請先圈選組別...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="forgotName">姓名：</label>
+        <input id="forgotName" type="text" placeholder="請輸入真實姓名" autocomplete="name" />
+      </div>
+
+      <div class="form-group">
+        <label for="forgotAccount">帳號：</label>
+        <input id="forgotAccount" type="email" placeholder="請輸入註冊的 Gmail" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="forgotNewPassword">新密碼：</label>
+        <input id="forgotNewPassword" type="password" placeholder="至少8碼，含英文大小寫與數字" autocomplete="new-password" />
+        <div class="hint">新密碼需包含英文大寫、小寫與數字，至少8碼</div>
+      </div>
+
+      <button class="btn" id="forgotBtn" onclick="handleResetPassword()">確認身份並修改密碼</button>
 
       <div class="link-row">
         <a class="text-link" onclick="showLoginPage()">返回登入</a>
@@ -330,9 +371,7 @@
   </div>
 
   <script>
-    // 這裡一定要換成你的 Apps Script Web App URL
-    // 格式應該是：https://script.google.com/macros/s/你的部署ID/exec
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyw628uSOoW2OwhzInAmtISkzdNm5pGGShZ2-5tqek5udNBDp-Lvf_T4kKPCm9RBvZ1Zg/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwkH4Wcby-clYLI9yzCClYLXdiGGq2KnB0tJ5Gte5Rkmy0ObbMFO92zx_rzzXPhdUdYIw/exec';
 
     function callApi(payload) {
       return new Promise(function(resolve, reject) {
@@ -398,23 +437,36 @@
     function showLoginPage() {
       document.getElementById('loginPage').classList.remove('hidden');
       document.getElementById('registerPage').classList.add('hidden');
+      document.getElementById('forgotPage').classList.add('hidden');
       document.getElementById('homePage').classList.add('hidden');
 
       clearMessage('loginMessage');
       clearMessage('registerMessage');
+      clearMessage('forgotMessage');
     }
 
     function showRegisterPage() {
       document.getElementById('loginPage').classList.add('hidden');
       document.getElementById('registerPage').classList.remove('hidden');
+      document.getElementById('forgotPage').classList.add('hidden');
       document.getElementById('homePage').classList.add('hidden');
 
       clearMessage('registerMessage');
     }
 
+    function showForgotPage() {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('registerPage').classList.add('hidden');
+      document.getElementById('forgotPage').classList.remove('hidden');
+      document.getElementById('homePage').classList.add('hidden');
+
+      clearMessage('forgotMessage');
+    }
+
     function showHomePage(user) {
       document.getElementById('loginPage').classList.add('hidden');
       document.getElementById('registerPage').classList.add('hidden');
+      document.getElementById('forgotPage').classList.add('hidden');
       document.getElementById('homePage').classList.remove('hidden');
 
       document.getElementById('homeContent').innerHTML = `
@@ -426,6 +478,11 @@
 
     function getSelectedGroup() {
       const checked = document.querySelector('input[name="group"]:checked');
+      return checked ? checked.value : '';
+    }
+
+    function getSelectedForgotGroup() {
+      const checked = document.querySelector('input[name="forgotGroup"]:checked');
       return checked ? checked.value : '';
     }
 
@@ -470,6 +527,50 @@
       } catch (err) {
         templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
         showMessage('registerMessage', 'error', err.message || '壇名讀取失敗，請稍後再試');
+      }
+    }
+
+    async function handleForgotGroupChange() {
+      clearMessage('forgotMessage');
+
+      const group = getSelectedForgotGroup();
+      const templeSelect = document.getElementById('forgotTempleSelect');
+
+      templeSelect.innerHTML = '<option value="">讀取中...</option>';
+      templeSelect.disabled = true;
+
+      try {
+        const result = await callApi({
+          action: 'getTemples',
+          group: group
+        });
+
+        if (!result.success) {
+          templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
+          showMessage('forgotMessage', 'error', result.message || '壇名讀取失敗');
+          return;
+        }
+
+        templeSelect.innerHTML = '<option value="">請選擇壇名</option>';
+
+        if (!result.temples || result.temples.length === 0) {
+          templeSelect.innerHTML = '<option value="">此組別目前沒有壇名</option>';
+          templeSelect.disabled = true;
+          return;
+        }
+
+        result.temples.forEach(function(temple) {
+          const option = document.createElement('option');
+          option.value = temple;
+          option.textContent = temple;
+          templeSelect.appendChild(option);
+        });
+
+        templeSelect.disabled = false;
+
+      } catch (err) {
+        templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
+        showMessage('forgotMessage', 'error', err.message || '壇名讀取失敗，請稍後再試');
       }
     }
 
@@ -558,33 +659,17 @@
           password: password
         });
 
-if (result.success) {
-  alert(result.message || '帳號申請成功，請登入');
+        if (result.success) {
+          alert(result.message || '帳號申請成功，請登入');
 
-  document.getElementById('registerName').value = '';
-  document.getElementById('registerAccount').value = '';
-  document.getElementById('registerPassword').value = '';
+          clearRegisterForm();
 
-  // 清除組別選擇
-  const groupRadios = document.querySelectorAll('input[name="group"]');
-  groupRadios.forEach(function(radio) {
-    radio.checked = false;
-  });
+          showLoginPage();
+          showMessage('loginMessage', 'success', '帳號申請成功，請使用剛剛申請的帳號登入');
 
-  // 重設壇名下拉選單
-  const templeSelect = document.getElementById('templeSelect');
-  templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
-  templeSelect.disabled = true;
-
-  // 跳回登入畫面
-  showLoginPage();
-
-  // 顯示成功訊息在登入頁
-  showMessage('loginMessage', 'success', '帳號申請成功，請使用剛剛申請的帳號登入');
-
-} else {
-  showMessage('registerMessage', 'error', result.message || '申請失敗');
-}
+        } else {
+          showMessage('registerMessage', 'error', result.message || '申請失敗');
+        }
 
       } catch (err) {
         showMessage('registerMessage', 'error', err.message || '系統連線失敗，請稍後再試');
@@ -592,6 +677,110 @@ if (result.success) {
         btn.disabled = false;
         btn.textContent = '送出申請';
       }
+    }
+
+    async function handleResetPassword() {
+      clearMessage('forgotMessage');
+
+      const btn = document.getElementById('forgotBtn');
+
+      const group = getSelectedForgotGroup();
+      const temple = document.getElementById('forgotTempleSelect').value.trim();
+      const name = document.getElementById('forgotName').value.trim();
+      const account = document.getElementById('forgotAccount').value.trim();
+      const newPassword = document.getElementById('forgotNewPassword').value.trim();
+
+      if (!group) {
+        showMessage('forgotMessage', 'error', '請選擇組別');
+        return;
+      }
+
+      if (!temple) {
+        showMessage('forgotMessage', 'error', '請選擇壇名');
+        return;
+      }
+
+      if (!name) {
+        showMessage('forgotMessage', 'error', '請輸入姓名');
+        return;
+      }
+
+      if (!account) {
+        showMessage('forgotMessage', 'error', '請輸入註冊的 Gmail');
+        return;
+      }
+
+      if (!newPassword) {
+        showMessage('forgotMessage', 'error', '請輸入新密碼');
+        return;
+      }
+
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+        showMessage('forgotMessage', 'error', '新密碼需包含英文大寫、小寫與數字，且至少8碼');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '修改中...';
+
+      try {
+        const result = await callApi({
+          action: 'resetPassword',
+          group: group,
+          temple: temple,
+          name: name,
+          account: account,
+          newPassword: newPassword
+        });
+
+        if (result.success) {
+          alert(result.message || '密碼變更成功，請登入');
+
+          clearForgotForm();
+
+          showLoginPage();
+          showMessage('loginMessage', 'success', '密碼變更成功，請使用新密碼登入');
+
+        } else {
+          showMessage('forgotMessage', 'error', result.message || '密碼變更失敗');
+        }
+
+      } catch (err) {
+        showMessage('forgotMessage', 'error', err.message || '系統連線失敗，請稍後再試');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '確認身份並修改密碼';
+      }
+    }
+
+    function clearRegisterForm() {
+      document.getElementById('registerName').value = '';
+      document.getElementById('registerAccount').value = '';
+      document.getElementById('registerPassword').value = '';
+
+      const groupRadios = document.querySelectorAll('input[name="group"]');
+      groupRadios.forEach(function(radio) {
+        radio.checked = false;
+      });
+
+      const templeSelect = document.getElementById('templeSelect');
+      templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
+      templeSelect.disabled = true;
+    }
+
+    function clearForgotForm() {
+      document.getElementById('forgotName').value = '';
+      document.getElementById('forgotAccount').value = '';
+      document.getElementById('forgotNewPassword').value = '';
+
+      const groupRadios = document.querySelectorAll('input[name="forgotGroup"]');
+      groupRadios.forEach(function(radio) {
+        radio.checked = false;
+      });
+
+      const templeSelect = document.getElementById('forgotTempleSelect');
+      templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
+      templeSelect.disabled = true;
     }
 
     function logout() {
@@ -617,6 +806,8 @@ if (result.success) {
         handleLogin();
       } else if (!document.getElementById('registerPage').classList.contains('hidden')) {
         handleRegister();
+      } else if (!document.getElementById('forgotPage').classList.contains('hidden')) {
+        handleResetPassword();
       }
     });
   </script>
