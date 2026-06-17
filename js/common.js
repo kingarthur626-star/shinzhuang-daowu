@@ -1,39 +1,54 @@
-function showMessage(elementId, type, text) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
+function showMessage(elementId, type, message) {
+  const element = document.getElementById(elementId);
 
-  el.className = 'message ' + type;
-  el.textContent = text;
+  if (!element) return;
+
+  element.className = 'message ' + type;
+  element.textContent = message;
 }
 
 function clearMessage(elementId) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
+  const element = document.getElementById(elementId);
 
-  el.className = 'message';
-  el.textContent = '';
+  if (!element) return;
+
+  element.className = 'message';
+  element.textContent = '';
 }
 
-function escapeHtml(text) {
-  return String(text || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
-function saveCurrentUser(user) {
-  sessionStorage.setItem('currentUser', JSON.stringify(user));
+function saveCurrentUser(user, token) {
+  if (!user) return;
+
+  const currentUser = {
+    temple: user.temple || '',
+    name: user.name || '',
+    account: user.account || '',
+    token: token || user.token || ''
+  };
+
+  sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
 }
 
 function getCurrentUser() {
-  try {
-    const raw = sessionStorage.getItem('currentUser');
-    if (!raw) return null;
+  const raw = sessionStorage.getItem('currentUser');
 
+  if (!raw) {
+    return null;
+  }
+
+  try {
     return JSON.parse(raw);
   } catch (err) {
+    sessionStorage.removeItem('currentUser');
     return null;
   }
 }
@@ -41,7 +56,8 @@ function getCurrentUser() {
 function requireLogin() {
   const user = getCurrentUser();
 
-  if (!user || !user.temple || !user.name || !user.account) {
+  if (!user || !user.token) {
+    sessionStorage.removeItem('currentUser');
     location.href = 'index.html';
     return null;
   }
@@ -55,19 +71,22 @@ function logout() {
 }
 
 function getSelectedRadioValue(name) {
-  const checked = document.querySelector('input[name="' + name + '"]:checked');
-  return checked ? checked.value : '';
+  const selected = document.querySelector('input[name="' + name + '"]:checked');
+
+  if (!selected) {
+    return '';
+  }
+
+  return selected.value;
 }
 
 async function loadTemplesByGroup(group, selectId, messageId) {
-  const templeSelect = document.getElementById(selectId);
+  const select = document.getElementById(selectId);
 
-  if (!templeSelect) return;
+  if (!select) return;
 
-  clearMessage(messageId);
-
-  templeSelect.innerHTML = '<option value="">讀取中...</option>';
-  templeSelect.disabled = true;
+  select.innerHTML = '<option value="">讀取中...</option>';
+  select.disabled = true;
 
   try {
     const result = await callApi({
@@ -76,30 +95,30 @@ async function loadTemplesByGroup(group, selectId, messageId) {
     });
 
     if (!result.success) {
-      templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
-      showMessage(messageId, 'error', result.message || '壇名讀取失敗');
+      if (messageId) {
+        showMessage(messageId, 'error', result.message || '壇名讀取失敗');
+      }
+
+      select.innerHTML = '<option value="">請先選擇組別</option>';
       return;
     }
 
-    templeSelect.innerHTML = '<option value="">請選擇壇名</option>';
-
-    if (!result.temples || result.temples.length === 0) {
-      templeSelect.innerHTML = '<option value="">此組別目前沒有壇名</option>';
-      templeSelect.disabled = true;
-      return;
-    }
+    select.innerHTML = '<option value="">請選擇壇名</option>';
 
     result.temples.forEach(function(temple) {
       const option = document.createElement('option');
       option.value = temple;
       option.textContent = temple;
-      templeSelect.appendChild(option);
+      select.appendChild(option);
     });
 
-    templeSelect.disabled = false;
+    select.disabled = false;
 
   } catch (err) {
-    templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
-    showMessage(messageId, 'error', err.message || '壇名讀取失敗，請稍後再試');
+    if (messageId) {
+      showMessage(messageId, 'error', err.message || '壇名讀取失敗');
+    }
+
+    select.innerHTML = '<option value="">請先選擇組別</option>';
   }
 }

@@ -1,31 +1,47 @@
 function callApi(payload) {
-  return new Promise(function(resolve, reject) {
-    if (!GAS_URL || GAS_URL.includes('請貼上')) {
-      reject(new Error('尚未設定 Apps Script Web App URL'));
-      return;
-    }
+  payload = addTokenToPayload(payload || {});
 
-    const callbackName = 'gasCallback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+  return new Promise(function(resolve, reject) {
+    const callbackName =
+      'jsonpCallback_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random() * 100000);
 
     payload.callback = callbackName;
-    payload._t = Date.now();
 
-    const params = new URLSearchParams(payload);
+    const params = new URLSearchParams();
+
+    Object.keys(payload).forEach(function(key) {
+      if (payload[key] !== undefined && payload[key] !== null) {
+        params.append(key, payload[key]);
+      }
+    });
+
     const script = document.createElement('script');
+    script.src = GAS_URL + '?' + params.toString();
 
     const timer = setTimeout(function() {
       cleanup();
-      reject(new Error('連線逾時，請確認 Apps Script 是否已部署為 Web App'));
+      reject(new Error('系統連線逾時，請稍後再試'));
     }, 15000);
 
     window[callbackName] = function(result) {
       cleanup();
+
+      if (result && result.code === 'AUTH_REQUIRED') {
+        sessionStorage.removeItem('currentUser');
+        alert(result.message || '登入逾時，請重新登入');
+        location.href = 'index.html';
+        return;
+      }
+
       resolve(result);
     };
 
     script.onerror = function() {
       cleanup();
-      reject(new Error('無法連線到 Apps Script，請確認網址與部署權限'));
+      reject(new Error('系統連線失敗，請稍後再試'));
     };
 
     function cleanup() {
@@ -42,7 +58,41 @@ function callApi(payload) {
       }
     }
 
-    script.src = GAS_URL + '?' + params.toString();
     document.body.appendChild(script);
   });
+}
+
+function addTokenToPayload(payload) {
+  payload = Object.assign({}, payload);
+
+  const publicActions = [
+    'test',
+    'getCaptcha',
+    'login',
+    'getTemples',
+    'registerAccount',
+    'resetPassword'
+  ];
+
+  if (publicActions.indexOf(payload.action) !== -1) {
+    return payload;
+  }
+
+  const raw = sessionStorage.getItem('currentUser');
+
+  if (!raw) {
+    return payload;
+  }
+
+  try {
+    const user = JSON.parse(raw);
+
+    if (user && user.token) {
+      payload.token = user.token;
+    }
+  } catch (err) {
+    sessionStorage.removeItem('currentUser');
+  }
+
+  return payload;
 }
