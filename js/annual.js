@@ -4,7 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!user) return;
 
   document.getElementById('annualTitle').textContent = user.temple + ' 今年道務';
-  document.getElementById('userInfo').textContent = user.temple + '　' + user.name;
+
+  // 不顯示「壇名　姓名」
+  const userInfo = document.getElementById('userInfo');
+  if (userInfo) {
+    userInfo.style.display = 'none';
+  }
 
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
@@ -47,60 +52,65 @@ async function loadAnnualStats(user) {
 
 function renderAnnualStats(result) {
   const area = document.getElementById('annualStatsArea');
-  const monthText = '1月到' + result.monthLimit + '月';
 
+  // 不顯示「2A_顓德｜2026 年 1月到6月 統計」
   area.innerHTML = `
-    <div class="small-text">
-      ${escapeHtml(result.temple)}｜${result.year} 年 ${monthText} 統計
-    </div>
-
-    ${renderStatCard('2026求道', result.data.qiudao)}
-    ${renderStatCard('2026法會', result.data.fahui)}
+    ${renderCombinedStats(result)}
   `;
 }
 
-function renderStatCard(title, item) {
-  if (!item || !item.found) {
-    return `
-      <div class="stat-card">
-        <h2>${escapeHtml(title)}</h2>
-        <div class="not-found">查無此壇名資料</div>
-      </div>
-    `;
-  }
+function renderCombinedStats(result) {
+  const qiudao = result.data.qiudao;
+  const fahui = result.data.fahui;
 
-  const monthRows = item.months.map(function(m) {
-    return `
+  const monthRows = [];
+
+  for (let month = 1; month <= result.monthLimit; month++) {
+    const qiudaoValue = getMonthValue(qiudao, month);
+    const fahuiValue = getMonthValue(fahui, month);
+
+    monthRows.push(`
       <tr>
-        <td>${escapeHtml(m.label)}</td>
-        <td>${escapeHtml(m.value)}</td>
+        <td>${month}月</td>
+        <td>${escapeHtml(qiudaoValue)}</td>
+        <td>${escapeHtml(fahuiValue)}</td>
       </tr>
-    `;
-  }).join('');
+    `);
+  }
 
   return `
     <div class="stat-card">
-      <h2>${escapeHtml(title)}</h2>
+      <h2>2026道務統計</h2>
 
       <div class="stat-summary">
         <div class="stat-box">
-          <div class="stat-label">年度目標</div>
-          <div class="stat-value">${escapeHtml(item.annualTarget)}</div>
+          <div class="stat-label">求道年度目標</div>
+          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'annualTarget'))}</div>
         </div>
 
         <div class="stat-box">
-          <div class="stat-label">今年累計</div>
-          <div class="stat-value">${escapeHtml(item.ytdTotal)}</div>
+          <div class="stat-label">求道今年累計</div>
+          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'ytdTotal'))}</div>
         </div>
 
         <div class="stat-box">
-          <div class="stat-label">達成率</div>
-          <div class="stat-value">${escapeHtml(item.achievementRate)}</div>
+          <div class="stat-label">法會年度目標</div>
+          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'annualTarget'))}</div>
         </div>
 
         <div class="stat-box">
-          <div class="stat-label">總計欄位</div>
-          <div class="stat-value">${escapeHtml(item.totalYear)}</div>
+          <div class="stat-label">法會今年累計</div>
+          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'ytdTotal'))}</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-label">求道達成率</div>
+          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'achievementRate'))}</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-label">法會達成率</div>
+          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'achievementRate'))}</div>
         </div>
       </div>
 
@@ -108,13 +118,38 @@ function renderStatCard(title, item) {
         <thead>
           <tr>
             <th>月份</th>
-            <th>數量</th>
+            <th>求道</th>
+            <th>法會</th>
           </tr>
         </thead>
         <tbody>
-          ${monthRows}
+          ${monthRows.join('')}
         </tbody>
       </table>
     </div>
   `;
+}
+
+function getMonthValue(item, month) {
+  if (!item || !item.found || !item.months) {
+    return '0';
+  }
+
+  const monthData = item.months.find(function(m) {
+    return Number(m.month) === Number(month);
+  });
+
+  if (!monthData) {
+    return '0';
+  }
+
+  return monthData.value || '0';
+}
+
+function getStatValue(item, key) {
+  if (!item || !item.found) {
+    return '0';
+  }
+
+  return item[key] || '0';
 }
