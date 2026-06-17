@@ -127,6 +127,8 @@ function renderRecentDutyStats(result) {
     <div class="stat-card">
       <h2>2022-2026 求道 - ${escapeHtml(getDisplayTempleName(result.temple))}</h2>
 
+      ${renderLineChart(result.rows, 'qiudao', '求道')}
+
       <div class="table-scroll">
         <table class="stat-table history-table">
           <thead>
@@ -147,6 +149,8 @@ function renderRecentDutyStats(result) {
     <div class="stat-card">
       <h2>2022-2026 法會 - ${escapeHtml(getDisplayTempleName(result.temple))}</h2>
 
+      ${renderLineChart(result.rows, 'fahui', '法會')}
+
       <div class="table-scroll">
         <table class="stat-table history-table">
           <thead>
@@ -166,6 +170,143 @@ function renderRecentDutyStats(result) {
   `;
 }
 
+function renderLineChart(rows, type, title) {
+  const chartRows = rows.slice().reverse();
+
+  const points = chartRows.map(function(row) {
+    return {
+      year: String(row.year),
+      target: toNumber(row[type].target),
+      total: toNumber(row[type].total)
+    };
+  });
+
+  const validNumbers = [];
+
+  points.forEach(function(item) {
+    if (item.target > 0) validNumbers.push(item.target);
+    if (item.total > 0) validNumbers.push(item.total);
+  });
+
+  if (validNumbers.length === 0) {
+    return '<div class="small-text">目前沒有可繪製的圖表資料</div>';
+  }
+
+  const width = 320;
+  const height = 190;
+  const paddingLeft = 34;
+  const paddingRight = 16;
+  const paddingTop = 18;
+  const paddingBottom = 36;
+
+  const chartWidth = width - paddingLeft - paddingRight;
+  const chartHeight = height - paddingTop - paddingBottom;
+
+  const maxValue = Math.max.apply(null, validNumbers);
+  const yMax = Math.ceil(maxValue * 1.15);
+
+  function getX(index) {
+    if (points.length === 1) {
+      return paddingLeft + chartWidth / 2;
+    }
+
+    return paddingLeft + index * (chartWidth / (points.length - 1));
+  }
+
+  function getY(value) {
+    if (!value || value <= 0) {
+      return null;
+    }
+
+    return paddingTop + chartHeight - (value / yMax) * chartHeight;
+  }
+
+  function buildPath(key) {
+    let path = '';
+
+    points.forEach(function(item, index) {
+      const y = getY(item[key]);
+
+      if (y === null) return;
+
+      const x = getX(index);
+
+      if (!path) {
+        path += `M ${x} ${y}`;
+      } else {
+        path += ` L ${x} ${y}`;
+      }
+    });
+
+    return path;
+  }
+
+  function buildDots(key, className) {
+    return points.map(function(item, index) {
+      const y = getY(item[key]);
+
+      if (y === null) return '';
+
+      const x = getX(index);
+
+      return `
+        <circle class="${className}" cx="${x}" cy="${y}" r="3"></circle>
+        <text class="chart-value" x="${x}" y="${y - 7}" text-anchor="middle">${item[key]}</text>
+      `;
+    }).join('');
+  }
+
+  const targetPath = buildPath('target');
+  const totalPath = buildPath('total');
+
+  const yearLabels = points.map(function(item, index) {
+    const x = getX(index);
+
+    return `
+      <text class="chart-year" x="${x}" y="${height - 12}" text-anchor="middle">${item.year}</text>
+    `;
+  }).join('');
+
+  return `
+    <div class="line-chart-box">
+      <div class="chart-legend">
+        <span><i class="legend-target"></i>目標</span>
+        <span><i class="legend-total"></i>累計</span>
+      </div>
+
+      <svg class="line-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(title)}近年趨勢圖">
+        <line class="chart-axis" x1="${paddingLeft}" y1="${paddingTop}" x2="${paddingLeft}" y2="${height - paddingBottom}"></line>
+        <line class="chart-axis" x1="${paddingLeft}" y1="${height - paddingBottom}" x2="${width - paddingRight}" y2="${height - paddingBottom}"></line>
+
+        <line class="chart-grid" x1="${paddingLeft}" y1="${paddingTop}" x2="${width - paddingRight}" y2="${paddingTop}"></line>
+        <text class="chart-max" x="4" y="${paddingTop + 4}">${yMax}</text>
+
+        ${targetPath ? `<path class="chart-line chart-line-target" d="${targetPath}"></path>` : ''}
+        ${totalPath ? `<path class="chart-line chart-line-total" d="${totalPath}"></path>` : ''}
+
+        ${buildDots('target', 'chart-dot-target')}
+        ${buildDots('total', 'chart-dot-total')}
+
+        ${yearLabels}
+      </svg>
+    </div>
+  `;
+}
+
+function toNumber(value) {
+  const text = String(value || '')
+    .replace(/,/g, '')
+    .replace(/%/g, '')
+    .trim();
+
+  const number = Number(text);
+
+  if (!isFinite(number)) {
+    return 0;
+  }
+
+  return number;
+}
 
 function findMatchedTemple(temples, loginTemple) {
   const loginTempleText = normalizeTempleForDisplay(loginTemple);
