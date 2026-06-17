@@ -558,16 +558,33 @@
           password: password
         });
 
-        if (result.success) {
-          showMessage('registerMessage', 'success', result.message || '帳號申請成功');
+if (result.success) {
+  alert(result.message || '帳號申請成功，請登入');
 
-          document.getElementById('registerName').value = '';
-          document.getElementById('registerAccount').value = '';
-          document.getElementById('registerPassword').value = '';
+  document.getElementById('registerName').value = '';
+  document.getElementById('registerAccount').value = '';
+  document.getElementById('registerPassword').value = '';
 
-        } else {
-          showMessage('registerMessage', 'error', result.message || '申請失敗');
-        }
+  // 清除組別選擇
+  const groupRadios = document.querySelectorAll('input[name="group"]');
+  groupRadios.forEach(function(radio) {
+    radio.checked = false;
+  });
+
+  // 重設壇名下拉選單
+  const templeSelect = document.getElementById('templeSelect');
+  templeSelect.innerHTML = '<option value="">請先圈選組別...</option>';
+  templeSelect.disabled = true;
+
+  // 跳回登入畫面
+  showLoginPage();
+
+  // 顯示成功訊息在登入頁
+  showMessage('loginMessage', 'success', '帳號申請成功，請使用剛剛申請的帳號登入');
+
+} else {
+  showMessage('registerMessage', 'error', result.message || '申請失敗');
+}
 
       } catch (err) {
         showMessage('registerMessage', 'error', err.message || '系統連線失敗，請稍後再試');
