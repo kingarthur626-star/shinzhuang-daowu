@@ -101,15 +101,21 @@ async function loadRecentDutyStats(temple) {
 function renderRecentDutyStats(result) {
   const area = document.getElementById('historyStatsArea');
 
-  const rows = result.rows.map(function(row) {
+  const qiudaoRows = result.rows.map(function(row) {
     return `
       <tr>
         <td>${escapeHtml(row.year)}</td>
-
         <td>${escapeHtml(formatZeroAsBlank(row.qiudao.target))}</td>
         <td>${escapeHtml(formatZeroAsBlank(row.qiudao.total))}</td>
         <td>${escapeHtml(formatZeroAsBlank(row.qiudao.achievementRate))}</td>
+      </tr>
+    `;
+  }).join('');
 
+  const fahuiRows = result.rows.map(function(row) {
+    return `
+      <tr>
+        <td>${escapeHtml(row.year)}</td>
         <td>${escapeHtml(formatZeroAsBlank(row.fahui.target))}</td>
         <td>${escapeHtml(formatZeroAsBlank(row.fahui.total))}</td>
         <td>${escapeHtml(formatZeroAsBlank(row.fahui.achievementRate))}</td>
@@ -119,34 +125,47 @@ function renderRecentDutyStats(result) {
 
   area.innerHTML = `
     <div class="stat-card">
-      <h2>2022-2026 道務統計 - ${escapeHtml(getDisplayTempleName(result.temple))}</h2>
+      <h2>2022-2026 求道 - ${escapeHtml(getDisplayTempleName(result.temple))}</h2>
 
       <div class="table-scroll">
         <table class="stat-table history-table">
           <thead>
             <tr>
-              <th rowspan="2">年度</th>
-              <th colspan="3">求道</th>
-              <th colspan="3">法會</th>
-            </tr>
-            <tr>
-              <th>目標</th>
-              <th>累計</th>
-              <th>達成</th>
-
-              <th>目標</th>
+              <th>年度</th>
+              <th>求道</th>
               <th>累計</th>
               <th>達成</th>
             </tr>
           </thead>
           <tbody>
-            ${rows}
+            ${qiudaoRows}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <h2>2022-2026 法會 - ${escapeHtml(getDisplayTempleName(result.temple))}</h2>
+
+      <div class="table-scroll">
+        <table class="stat-table history-table">
+          <thead>
+            <tr>
+              <th>年度</th>
+              <th>法會</th>
+              <th>累計</th>
+              <th>達成</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${fahuiRows}
           </tbody>
         </table>
       </div>
     </div>
   `;
 }
+
 
 function findMatchedTemple(temples, loginTemple) {
   const loginTempleText = normalizeTempleForDisplay(loginTemple);
