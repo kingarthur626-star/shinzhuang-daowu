@@ -6,7 +6,7 @@
 
   <title>新莊區 道務檢視</title>
 
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=10" />
 </head>
 
 <body>
@@ -19,15 +19,48 @@
       <form id="loginForm">
         <div class="form-group">
           <label for="loginAccount">登入帳號</label>
-          <input id="loginAccount" type="email" placeholder="請輸入帳號" autocomplete="username" />
+          <input
+            type="email"
+            id="loginAccount"
+            placeholder="請輸入帳號"
+            autocomplete="username"
+          />
         </div>
 
         <div class="form-group">
           <label for="loginPassword">登入密碼</label>
-          <input id="loginPassword" type="password" placeholder="請輸入密碼" autocomplete="current-password" />
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="請輸入密碼"
+            autocomplete="current-password"
+          />
         </div>
 
-        <button class="btn" id="loginBtn" type="submit">登入</button>
+        <div class="form-group">
+          <label for="captchaInput">驗證碼</label>
+
+          <div class="captcha-row">
+            <input
+              type="text"
+              id="captchaInput"
+              placeholder="請輸入驗證碼"
+              autocomplete="off"
+            />
+
+            <img id="captchaImage" class="captcha-image" alt="驗證碼" />
+
+            <button
+              class="captcha-refresh"
+              id="refreshCaptchaBtn"
+              type="button"
+            >
+              更新驗證碼
+            </button>
+          </div>
+        </div>
+
+        <button class="btn" type="submit">登入</button>
       </form>
 
       <div class="login-link-row">
@@ -38,8 +71,8 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/common.js"></script>
-  <script src="js/login.js"></script>
+  <script src="js/api.js?v=10"></script>
+  <script src="js/common.js?v=10"></script>
+  <script src="js/login.js?v=10"></script>
 </body>
 </html>
