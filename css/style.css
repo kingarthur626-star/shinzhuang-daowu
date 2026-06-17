@@ -335,3 +335,19 @@ select:disabled {
 .history-table td {
   white-space: nowrap;
 }
+
+.inline-select-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inline-select-row label {
+  margin-bottom: 0;
+  white-space: nowrap;
+  font-size: 17px;
+}
+
+.inline-select-row select {
+  flex: 1;
+}
