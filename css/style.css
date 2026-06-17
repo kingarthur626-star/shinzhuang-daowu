@@ -308,3 +308,21 @@ select:disabled {
     padding: 24px 20px 34px;
   }
 }
+
+.wide-card {
+  max-width: 760px;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.history-table {
+  min-width: 680px;
+}
+
+.history-table th,
+.history-table td {
+  white-space: nowrap;
+}
