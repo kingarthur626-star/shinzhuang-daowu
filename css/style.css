@@ -310,16 +310,25 @@ select:disabled {
 }
 
 .wide-card {
-  max-width: 760px;
+  max-width: 430px;
 }
 
 .table-scroll {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: visible;
 }
 
 .history-table {
-  min-width: 680px;
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.history-table th,
+.history-table td {
+  white-space: normal;
+  padding: 8px 4px;
+  font-size: 14px;
 }
 
 .history-table th,
