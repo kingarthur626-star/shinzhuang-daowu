@@ -451,8 +451,18 @@ select:disabled {
 }
 
 .title-temple-select {
-  width: 100px !important;
+  width: 125px !important;
   height: 42px;
   padding: 0 8px;
   font-size: 15px;
+}
+
+.title-qiudao {
+  color: #d97706;
+  font-weight: 800;
+}
+
+.title-fahui {
+  color: #2563eb;
+  font-weight: 800;
 }
