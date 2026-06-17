@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>忘記密碼 / 變更密碼</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div class="page">
+    <div class="card">
+      <h1>忘記密碼 / 變更密碼</h1>
+
+      <div id="forgotMessage" class="message"></div>
+
+      <form id="forgotForm">
+        <div class="form-group">
+          <div class="label">組別：</div>
+
+          <div class="radio-row">
+            <label class="radio-item">
+              <input type="radio" name="forgotGroup" value="1" />
+              第1組
+            </label>
+
+            <label class="radio-item">
+              <input type="radio" name="forgotGroup" value="2" />
+              第2組
+            </label>
+
+            <label class="radio-item">
+              <input type="radio" name="forgotGroup" value="3" />
+              第3組
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="forgotTempleSelect">壇名：</label>
+          <select id="forgotTempleSelect" disabled>
+            <option value="">請先圈選組別...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="forgotName">姓名：</label>
+          <input id="forgotName" type="text" placeholder="請輸入真實姓名" autocomplete="name" />
+        </div>
+
+        <div class="form-group">
+          <label for="forgotAccount">帳號：</label>
+          <input id="forgotAccount" type="email" placeholder="請輸入註冊的 Gmail" autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label for="forgotNewPassword">新密碼：</label>
+          <input id="forgotNewPassword" type="password" placeholder="至少8碼，含英文大小寫與數字" autocomplete="new-password" />
+          <div class="hint">新密碼需包含英文大寫、小寫與數字，至少8碼</div>
+        </div>
+
+        <button class="btn" id="forgotBtn" type="submit">確認身份並修改密碼</button>
+      </form>
+
+      <div class="link-row">
+        <a class="text-link" href="index.html">返回登入</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/forgot.js"></script>
+</body>
+</html>

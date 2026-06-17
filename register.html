@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>申請帳號</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div class="page">
+    <div class="card">
+      <h1>申請帳號</h1>
+
+      <div id="registerMessage" class="message"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <div class="label">組別：</div>
+
+          <div class="radio-row">
+            <label class="radio-item">
+              <input type="radio" name="group" value="1" />
+              第1組
+            </label>
+
+            <label class="radio-item">
+              <input type="radio" name="group" value="2" />
+              第2組
+            </label>
+
+            <label class="radio-item">
+              <input type="radio" name="group" value="3" />
+              第3組
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="templeSelect">壇名：</label>
+          <select id="templeSelect" disabled>
+            <option value="">請先圈選組別...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="registerName">姓名：</label>
+          <input id="registerName" type="text" placeholder="請輸入真實姓名" autocomplete="name" />
+        </div>
+
+        <div class="form-group">
+          <label for="registerAccount">帳號：</label>
+          <input id="registerAccount" type="email" placeholder="例如: example@gmail.com" autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label for="registerPassword">密碼：</label>
+          <input id="registerPassword" type="password" placeholder="例如: 912345678" inputmode="numeric" />
+          <div class="hint">請輸入手機號碼，開頭不含0</div>
+        </div>
+
+        <button class="btn" id="registerBtn" type="submit">送出申請</button>
+      </form>
+
+      <div class="link-row">
+        <a class="text-link" href="index.html">返回登入</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>
