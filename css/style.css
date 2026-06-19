@@ -843,6 +843,7 @@ select:disabled {
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
@@ -926,7 +927,7 @@ select:disabled {
   }
 
   .captcha-side {
-    grid-template-columns: 1fr 84px;
+    grid-template-columns: 1fr 104px;
     grid-template-rows: none;
     gap: 8px;
   }
