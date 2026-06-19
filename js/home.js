@@ -14,7 +14,7 @@ function initHomePage(user) {
   }
 
   bindHomeButtons();
-  loadHomePermissions();
+  loadHomePermissions(user);
   loadTaoReportLastUpdate();
 }
 
@@ -41,21 +41,31 @@ function bindHomeButtons() {
   }
 
   if (btnLogout) {
-    btnLogout.addEventListener('click', logout);
+    btnLogout.addEventListener('click', function () {
+      localStorage.removeItem(HOME_PERMISSION_CACHE_KEY);
+      logout();
+    });
   }
 }
 
-async function loadHomePermissions() {
+const HOME_PERMISSION_CACHE_KEY = 'XZDS_HOME_PERMISSIONS';
+const HOME_PERMISSION_CACHE_SECONDS = 600; // 10分鐘
+
+async function loadHomePermissions(user) {
   const btnUpdate = document.getElementById('btnUpdate');
   const btnMore = document.getElementById('btnMore');
 
-  // 預設全部隱藏，避免沒有權限的人先看到按鈕
-  if (btnUpdate) {
-    btnUpdate.style.display = 'none';
-  }
+  // 預設先隱藏，避免沒權限的人看到
+  applyHomePermissions_({
+    updateTaoReport: false,
+    adminPanel: false
+  });
 
-  if (btnMore) {
-    btnMore.style.display = 'none';
+  // 先讀本機暫存權限，讓回首頁時不用等 2 秒
+  const cached = getCachedHomePermissions_(user);
+
+  if (cached) {
+    applyHomePermissions_(cached);
   }
 
   try {
@@ -64,18 +74,41 @@ async function loadHomePermissions() {
     });
 
     if (!result.success) {
+      if (!cached) {
+        applyHomePermissions_({
+          updateTaoReport: false,
+          adminPanel: false
+        });
+      }
       return;
     }
 
     const permissions = result.permissions || {};
 
-    // 有「更新即時報表」權限的人，才顯示更新報表
-    if (btnUpdate && permissions.updateTaoReport) {
-      btnUpdate.style.display = 'flex';
-    }
+    setCachedHomePermissions_(user, permissions);
+    applyHomePermissions_(permissions);
 
-    // 有「系統後台」權限的人，才顯示系統後台
-    if (btnMore && permissions.adminPanel) {
+  } catch (err) {
+    // 如果後端暫時讀不到，但本機有暫存，就先維持暫存畫面
+    if (!cached) {
+      applyHomePermissions_({
+        updateTaoReport: false,
+        adminPanel: false
+      });
+    }
+  }
+}
+
+function applyHomePermissions_(permissions) {
+  const btnUpdate = document.getElementById('btnUpdate');
+  const btnMore = document.getElementById('btnMore');
+
+  if (btnUpdate) {
+    btnUpdate.style.display = permissions.updateTaoReport ? 'flex' : 'none';
+  }
+
+  if (btnMore) {
+    if (permissions.adminPanel) {
       btnMore.style.display = 'flex';
       btnMore.classList.remove('disabled');
 
@@ -87,17 +120,66 @@ async function loadHomePermissions() {
       btnMore.onclick = function () {
         location.href = 'admin.html';
       };
-    }
 
-  } catch (err) {
-    if (btnUpdate) {
-      btnUpdate.style.display = 'none';
-    }
-
-    if (btnMore) {
+    } else {
       btnMore.style.display = 'none';
     }
   }
+}
+
+function getCachedHomePermissions_(user) {
+  const userKey = getHomePermissionUserKey_(user);
+
+  if (!userKey) return null;
+
+  try {
+    const raw = localStorage.getItem(HOME_PERMISSION_CACHE_KEY);
+
+    if (!raw) return null;
+
+    const cache = JSON.parse(raw);
+
+    if (!cache || cache.userKey !== userKey) {
+      return null;
+    }
+
+    const now = Date.now();
+    const ageSeconds = (now - cache.savedAt) / 1000;
+
+    if (ageSeconds > HOME_PERMISSION_CACHE_SECONDS) {
+      return null;
+    }
+
+    return cache.permissions || null;
+
+  } catch (err) {
+    return null;
+  }
+}
+
+function setCachedHomePermissions_(user, permissions) {
+  const userKey = getHomePermissionUserKey_(user);
+
+  if (!userKey) return;
+
+  const cache = {
+    userKey: userKey,
+    savedAt: Date.now(),
+    permissions: permissions || {}
+  };
+
+  localStorage.setItem(HOME_PERMISSION_CACHE_KEY, JSON.stringify(cache));
+}
+
+function getHomePermissionUserKey_(user) {
+  if (!user) return '';
+
+  return String(
+    user.account ||
+    user.username ||
+    user.loginAccount ||
+    ''
+  ).trim();
 }
 
 async function loadTaoReportLastUpdate() {
