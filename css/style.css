@@ -996,3 +996,62 @@ select:disabled {
 .action-pill.logout:hover {
   background: #eef2f7;
 }
+/* =========================
+   固定式頁面操作列
+   annual.html / history.html 共用
+========================= */
+
+.page-inner {
+  width: 100%;
+  max-width: 430px;
+}
+
+.page-action-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  width: 100%;
+  margin: 0 auto 12px;
+  padding: 10px 2px 8px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  background: rgba(245, 247, 251, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.action-pill {
+  height: 40px;
+  min-width: 88px;
+  padding: 0 16px;
+  border: 1px solid #d7dde6;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #164568;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.action-pill:hover {
+  background: #f1f5f9;
+}
+
+.action-pill:active {
+  transform: scale(0.98);
+}
+
+.action-pill.logout {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.action-pill.logout:hover {
+  background: #eef2f7;
+}
