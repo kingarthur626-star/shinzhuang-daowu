@@ -13,8 +13,9 @@ function initHomePage(user) {
     templeEl.textContent = user.temple || '未取得壇名';
   }
 
-  bindHomeButtons();
-  loadTaoReportLastUpdate();
+	bindHomeButtons();
+	loadHomePermissions();
+	loadTaoReportLastUpdate();
 }
 
 function bindHomeButtons() {
@@ -151,5 +152,46 @@ function setUpdateButtonLoading(btn, isLoading) {
       <span class="home-menu-main">更新報表</span>
       <span class="home-menu-sub">即時同步</span>
     `;
+  }
+}
+
+async function loadHomePermissions() {
+  const btnUpdate = document.getElementById('btnUpdate');
+  const btnMore = document.getElementById('btnMore');
+
+  try {
+    const result = await callApi({
+      action: 'getMyPermissions'
+    });
+
+    if (!result.success) {
+      if (btnUpdate) btnUpdate.style.display = 'none';
+      if (btnMore) btnMore.style.display = 'none';
+      return;
+    }
+
+    const permissions = result.permissions || {};
+
+    if (btnUpdate && !permissions.updateTaoReport) {
+      btnUpdate.style.display = 'none';
+    }
+
+    if (btnMore && permissions.adminPanel) {
+      btnMore.classList.remove('disabled');
+      btnMore.innerHTML = `
+        <span class="home-menu-main">系統後台</span>
+        <span class="home-menu-sub">權限管理</span>
+      `;
+
+      btnMore.onclick = function() {
+        location.href = 'admin.html';
+      };
+    } else if (btnMore) {
+      btnMore.style.display = 'none';
+    }
+
+  } catch (err) {
+    if (btnUpdate) btnUpdate.style.display = 'none';
+    if (btnMore) btnMore.style.display = 'none';
   }
 }
