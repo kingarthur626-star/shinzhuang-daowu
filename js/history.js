@@ -16,13 +16,16 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   const templeSelect = document.getElementById('historyTempleSelect');
-  templeSelect.addEventListener('change', function() {
-    const temple = templeSelect.value;
 
-    if (temple) {
-      loadRecentDutyStats(temple);
-    }
-  });
+  if (templeSelect) {
+    templeSelect.addEventListener('change', function() {
+      const temple = templeSelect.value;
+
+      if (temple) {
+        loadRecentDutyStats(temple);
+      }
+    });
+  }
 
   loadTempleOptions(user);
 });
@@ -32,6 +35,8 @@ async function loadTempleOptions(user) {
 
   const templeSelect = document.getElementById('historyTempleSelect');
   const area = document.getElementById('historyStatsArea');
+
+  if (!templeSelect || !area) return;
 
   templeSelect.innerHTML = '<option value="">讀取中...</option>';
   templeSelect.disabled = true;
@@ -76,6 +81,9 @@ async function loadRecentDutyStats(temple) {
   clearMessage('historyMessage');
 
   const area = document.getElementById('historyStatsArea');
+
+  if (!area) return;
+
   area.innerHTML = '<div class="small-text">讀取中...</div>';
 
   try {
@@ -101,7 +109,25 @@ async function loadRecentDutyStats(temple) {
 function renderRecentDutyStats(result) {
   const area = document.getElementById('historyStatsArea');
 
-  const qiudaoRows = result.rows.map(function(row) {
+  if (!area) return;
+
+  const rows = result.rows || [];
+
+  if (rows.length === 0) {
+    area.innerHTML = `
+      <div class="stat-card">
+        <div class="small-text">
+          ${escapeHtml(result.message || '查無近年道務資料')}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const yearRangeText = result.yearRangeText || getYearRangeTextFromRows(rows);
+  const templeName = getDisplayTempleName(result.temple);
+
+  const qiudaoRows = rows.map(function(row) {
     return `
       <tr>
         <td>${escapeHtml(row.year)}</td>
@@ -112,7 +138,7 @@ function renderRecentDutyStats(result) {
     `;
   }).join('');
 
-  const fahuiRows = result.rows.map(function(row) {
+  const fahuiRows = rows.map(function(row) {
     return `
       <tr>
         <td>${escapeHtml(row.year)}</td>
@@ -125,9 +151,9 @@ function renderRecentDutyStats(result) {
 
   area.innerHTML = `
     <div class="stat-card">
-      <h2>2022-2026 <span class="title-qiudao">求道</span> - ${escapeHtml(getDisplayTempleName(result.temple))}</h2>
+      <h2>${escapeHtml(yearRangeText)} <span class="title-qiudao">求道</span> - ${escapeHtml(templeName)}</h2>
 
-      ${renderLineChart(result.rows, 'qiudao', '求道')}
+      ${renderLineChart(rows, 'qiudao', '求道')}
 
       <div class="table-scroll">
         <table class="stat-table history-table">
@@ -147,9 +173,9 @@ function renderRecentDutyStats(result) {
     </div>
 
     <div class="stat-card">
-      <h2>2022-2026 <span class="title-fahui">法會</span> - ${escapeHtml(getDisplayTempleName(result.temple))}</h2>
+      <h2>${escapeHtml(yearRangeText)} <span class="title-fahui">法會</span> - ${escapeHtml(templeName)}</h2>
 
-      ${renderLineChart(result.rows, 'fahui', '法會')}
+      ${renderLineChart(rows, 'fahui', '法會')}
 
       <div class="table-scroll">
         <table class="stat-table history-table">
@@ -355,4 +381,25 @@ function formatZeroAsBlank(value) {
   }
 
   return text;
+}
+
+function getYearRangeTextFromRows(rows) {
+  if (!rows || rows.length === 0) {
+    return '近年道務';
+  }
+
+  const years = rows.map(function(row) {
+    return Number(row.year);
+  }).filter(function(year) {
+    return isFinite(year);
+  });
+
+  if (years.length === 0) {
+    return '近年道務';
+  }
+
+  const yearStart = Math.min.apply(null, years);
+  const yearEnd = Math.max.apply(null, years);
+
+  return yearStart + '-' + yearEnd;
 }
