@@ -8,11 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
       <a class="menu-btn" href="annual.html">${escapeHtml(user.temple)} 今年道務</a>
       <a class="menu-btn" href="history.html">近年道務</a>
 
-      <div class="small-text" id="taoReportLastUpdate">
-        即時報表最後更新：讀取中...
-      </div>
-
       <button class="btn" id="updateTaoReportBtn" type="button">更新即時報表</button>
+
+		<div class="small-text" id="taoReportLastUpdate">
+			最後更新：讀取中...
+		</div>
     </div>
   `;
 
@@ -40,9 +40,9 @@ async function loadTaoReportLastUpdate() {
     });
 
     if (result.success && result.lastUpdate) {
-      area.textContent = '即時報表最後更新：' + result.lastUpdate;
+      area.textContent = '最後更新：' + result.lastUpdate;
     } else {
-      area.textContent = '即時報表最後更新：尚未更新';
+      area.textContent = '最後更新：尚未更新';
     }
 
   } catch (err) {
