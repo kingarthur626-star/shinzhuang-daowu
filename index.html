@@ -1,78 +1,59 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>新莊區 道務檢視</title>
-
-  <link rel="stylesheet" href="css/style.css?v=11" />
+  <link rel="stylesheet" href="./css/style.css?v=20260619-4">
 </head>
-
 <body>
-  <div class="page">
-    <div class="card">
-      <h1>新莊區 道務檢視</h1>
+  <div class="page login-page">
+    <div class="card login-card">
+      <div class="login-hero">
+        <div class="login-logo">道</div>
+        <h1 class="login-title">新莊區 道務檢視</h1>
+        <div class="login-subtitle">登入後查看今年道務、近年道務與即時報表</div>
+      </div>
 
-      <div id="loginMessage" class="message"></div>
+      <div id="messageBox" class="message"></div>
 
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="loginAccount">登入帳號</label>
-          <input
-            type="email"
-            id="loginAccount"
-            placeholder="請輸入帳號"
-            autocomplete="username"
-          />
-        </div>
+      <div class="form-group">
+        <label for="account">帳號</label>
+        <input id="account" type="text" placeholder="請輸入帳號">
+      </div>
 
-        <div class="form-group">
-          <label for="loginPassword">登入密碼</label>
-          <input
-            type="password"
-            id="loginPassword"
-            placeholder="請輸入密碼"
-            autocomplete="current-password"
-          />
-        </div>
+      <div class="form-group">
+        <label for="password">密碼</label>
+        <input id="password" type="password" placeholder="請輸入密碼">
+      </div>
 
-        <div class="form-group">
-          <label for="captchaInput">驗證碼</label>
+      <div class="form-group">
+        <label for="captchaInput">輸入驗證碼</label>
 
-          <div class="captcha-row">
-            <input
-              type="text"
-              id="captchaInput"
-              placeholder="請輸入驗證碼"
-              autocomplete="off"
-            />
+        <div class="captcha-panel">
+          <div class="captcha-input-wrap">
+            <input id="captchaInput" type="text" placeholder="請輸入驗證碼">
+          </div>
 
-            <img id="captchaImage" class="captcha-image" alt="驗證碼" />
-
-            <button
-              class="captcha-refresh"
-              id="refreshCaptchaBtn"
-              type="button"
-            >
-              更新
-            </button>
+          <div class="captcha-side">
+            <img id="captchaImage" class="captcha-image" src="" alt="驗證碼圖片">
+            <button id="refreshCaptchaBtn" class="captcha-refresh" type="button">更新</button>
           </div>
         </div>
+      </div>
 
-        <button class="btn" type="submit">登入</button>
-      </form>
+      <button id="loginBtn" class="btn" type="button">登入</button>
 
       <div class="login-link-row">
         <a class="text-link" href="register.html">申請帳號</a>
-        <a class="text-link" href="forgot.html">忘記密碼</a>
+        <a class="text-link" href="forgot.html">忘記/變更密碼</a>
       </div>
     </div>
   </div>
 
-  <script src="js/config.js"></script>
-  <script src="js/api.js?v=11"></script>
-  <script src="js/common.js?v=11"></script>
-  <script src="js/login.js?v=11"></script>
+  <script src="./js/config.js?v=20260619-4"></script>
+  <script src="./js/api.js?v=20260619-4"></script>
+  <script src="./js/common.js?v=20260619-4"></script>
+  <script src="./js/login.js?v=20260619-4"></script>
 </body>
 </html>
