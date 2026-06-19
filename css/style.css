@@ -708,3 +708,239 @@ select:disabled {
     font-size: 11px;
   }
 }
+/* =========================
+   Login Page 優化版
+========================= */
+
+.login-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, #eef6ff 0%, #f8fbff 35%, #ffffff 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 28px 14px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 30px 24px 28px;
+  box-shadow: 0 10px 30px rgba(32, 84, 147, 0.12);
+  border: 1px solid #e8eef6;
+}
+
+.login-hero {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.login-logo {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 12px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2f80ed, #4a90e2);
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(47, 128, 237, 0.25);
+}
+
+.login-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #143b63;
+  letter-spacing: 1px;
+}
+
+.login-subtitle {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #6b7b8d;
+  line-height: 1.6;
+}
+
+.login-card .form-group {
+  margin-bottom: 18px;
+}
+
+.login-card label {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #174869;
+  margin-bottom: 8px;
+}
+
+.login-card input {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #d7e1ec;
+  border-radius: 12px;
+  font-size: 16px;
+  padding: 0 14px;
+  color: #1f3b57;
+  background: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.login-card input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.14);
+}
+
+.login-card input::placeholder {
+  color: #98a5b3;
+}
+
+/* 驗證碼區：輸入框不再過大 */
+.captcha-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 132px;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.captcha-input-wrap {
+  min-width: 0;
+}
+
+.captcha-input-wrap input {
+  width: 100%;
+}
+
+.captcha-side {
+  display: grid;
+  grid-template-rows: 50px 50px;
+  gap: 10px;
+}
+
+.captcha-image {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #d7dde6;
+  border-radius: 12px;
+  background: #ffffff;
+  display: block;
+  object-fit: cover;
+}
+
+.captcha-refresh {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #2f80ed;
+  border-radius: 12px;
+  background: #eef5ff;
+  color: #2f80ed;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.captcha-refresh:hover {
+  background: #dfeeff;
+  transform: translateY(-1px);
+}
+
+.login-card .btn {
+  width: 100%;
+  min-height: 54px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2f80ed, #4a90e2);
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 8px 18px rgba(47, 128, 237, 0.2);
+  transition: all 0.2s ease;
+}
+
+.login-card .btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #2675df, #4189dc);
+}
+
+.login-card .btn:disabled {
+  background: #9bbfe8;
+  box-shadow: none;
+  transform: none;
+}
+
+.login-card .login-link-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.login-card .text-link {
+  color: #2f80ed;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.login-card .text-link:hover {
+  text-decoration: underline;
+}
+
+.login-card .message {
+  margin-bottom: 16px;
+  border-radius: 10px;
+}
+
+/* 手機版 */
+@media (max-width: 480px) {
+  .login-page {
+    padding: 16px 12px;
+  }
+
+  .login-card {
+    padding: 24px 18px 24px;
+    border-radius: 16px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .login-subtitle {
+    font-size: 13px;
+  }
+
+  .captcha-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .captcha-side {
+    grid-template-columns: 1fr 84px;
+    grid-template-rows: none;
+    gap: 8px;
+  }
+
+  .captcha-image {
+    height: 48px;
+  }
+
+  .captcha-refresh {
+    height: 48px;
+  }
+
+  .login-card .btn {
+    min-height: 52px;
+    font-size: 18px;
+  }
+}
