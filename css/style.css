@@ -2292,3 +2292,163 @@ body:has(#registerForm) .app-form-submit-btn {
   color: #64748b !important;
   border-color: #d7dde6 !important;
 }
+
+/* =========================
+程式區塊：admin.html 帳號管理頁
+功能說明：
+系統後台帳號管理頁專用樣式。
+讓帳號清單在手機上以卡片方式顯示。
+========================= */
+
+.admin-card {
+  max-width: 430px;
+}
+
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 10px;
+  margin: 16px 0 10px;
+}
+
+.admin-search-input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d7e1ec;
+  border-radius: 12px;
+  padding: 0 12px;
+  font-size: 15px;
+  color: #1f3b57;
+  background: #ffffff;
+  outline: none;
+}
+
+.admin-search-input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.14);
+}
+
+.admin-small-btn {
+  height: 42px;
+  border: 1px solid #2f80ed;
+  border-radius: 12px;
+  background: #eef5ff;
+  color: #2f80ed;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-small-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-stats-text {
+  margin: 8px 0 12px;
+}
+
+.admin-account-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-account-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 14px;
+  text-align: left;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.admin-account-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-account-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #143b63;
+  line-height: 1.4;
+}
+
+.admin-account-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #64748b;
+  word-break: break-all;
+}
+
+.admin-account-id {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #64748b;
+  background: #f1f5f9;
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.admin-account-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.admin-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #174869;
+}
+
+.admin-field select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d7e1ec;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1f3b57;
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+.admin-account-meta {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.admin-save-btn {
+  width: 100%;
+  height: 42px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #2f80ed;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.admin-save-btn:disabled {
+  background: #9bbfe8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 360px) {
+  .admin-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-account-grid {
+    grid-template-columns: 1fr;
+  }
+}
