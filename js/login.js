@@ -76,7 +76,7 @@ captchaInput.value = '';
 
 if (refreshCaptchaBtn) {
 refreshCaptchaBtn.disabled = true;
-refreshCaptchaBtn.textContent = '產生中';
+refreshCaptchaBtn.textContent = '更新驗證碼';
 }
 
 showCaptchaPlaceholder('產生中');
