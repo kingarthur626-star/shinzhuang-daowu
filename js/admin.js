@@ -307,9 +307,9 @@ async function updateOneAccount_(card) {
   }
 
   const ok = confirm(
-    '確認更新此帳號？\\n\\n' +
-    '帳號：' + account + '\\n' +
-    '角色：' + role + '\\n' +
+    '確認更新此帳號？\n\\n' +
+    '帳號：' + account + '\n' +
+    '角色：' + role + '\n' +
     '狀態：' + status
   );
 
