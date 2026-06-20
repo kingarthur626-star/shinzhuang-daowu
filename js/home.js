@@ -377,9 +377,17 @@ btn.disabled = isLoading;
 
 if (isLoading) {
 btn.classList.add('disabled');
-btn.innerHTML = <span class="home-menu-main">更新中</span> <span class="home-menu-sub">請稍候...</span> ;
+
+btn.innerHTML =
+  '<span class="home-menu-main">更新中</span>' +
+  '<span class="home-menu-sub">請稍候...</span>';
+
 } else {
 btn.classList.remove('disabled');
-btn.innerHTML = <span class="home-menu-main">更新報表</span> <span class="home-menu-sub">即時同步</span> ;
+
+btn.innerHTML =
+  '<span class="home-menu-main">更新報表</span>' +
+  '<span class="home-menu-sub">即時同步</span>';
+
 }
 }
