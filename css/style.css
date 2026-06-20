@@ -2452,3 +2452,45 @@ body:has(#registerForm) .app-form-submit-btn {
     grid-template-columns: 1fr;
   }
 }
+
+body.admin-page {
+height: 100dvh;
+overflow: hidden;
+}
+
+body.admin-page .page {
+height: 100dvh;
+overflow: hidden;
+}
+
+body.admin-page .page-inner {
+height: 100%;
+display: flex;
+flex-direction: column;
+}
+
+body.admin-page .page-action-bar {
+flex: 0 0 auto;
+position: sticky;
+top: 0;
+z-index: 30;
+background: #f8fafc;
+padding-top: max(14px, env(safe-area-inset-top));
+padding-bottom: 14px;
+}
+
+body.admin-page .admin-card {
+flex: 1 1 auto;
+min-height: 0;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+
+body.admin-page .admin-account-list {
+flex: 1 1 auto;
+min-height: 0;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
