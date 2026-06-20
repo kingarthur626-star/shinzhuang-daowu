@@ -1066,3 +1066,58 @@ body {
 .pwa-update-banner button:active {
   transform: scale(0.98);
 }
+
+/* =========================
+   登入頁 App 化固定版
+   功能說明：
+   讓登入頁在手機 PWA 中看起來更像 App。
+   平常畫面固定置中，減少上下滑動感。
+   但仍保留必要的內部捲動，避免手機鍵盤擋住輸入框。
+========================= */
+
+.login-page {
+  min-height: 100dvh;
+  height: 100dvh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding:
+    calc(18px + env(safe-area-inset-top, 0px))
+    14px
+    calc(18px + env(safe-area-inset-bottom, 0px));
+
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+/* =========================
+   登入卡片高度保護
+   功能說明：
+   當手機螢幕較小或鍵盤彈出時，
+   讓登入卡片本身可以捲動，
+   避免帳號、密碼、驗證碼或登入按鈕被遮住。
+========================= */
+
+.login-card {
+  max-height: calc(
+    100dvh - 36px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+  );
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* =========================
+   iPhone / iPad Safari 高度相容
+   功能說明：
+   部分 iOS 裝置對 100dvh 支援不一致，
+   補上 -webkit-fill-available 增加穩定性。
+========================= */
+
+@supports (-webkit-touch-callout: none) {
+  .login-page {
+    min-height: -webkit-fill-available;
+  }
+}
