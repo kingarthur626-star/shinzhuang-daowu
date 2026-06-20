@@ -33,14 +33,10 @@ if (templeEl) {
 templeEl.textContent = user.temple || '未取得壇名';
 }
 
-applyLastUpdateDisplay_(user);
+hideLastUpdateText_();
 
 bindHomeButtons();
 loadHomePermissions(user);
-
-if (isAdminUser_(user)) {
-loadTaoReportLastUpdate();
-}
 }
 
 /* =========================
@@ -55,6 +51,15 @@ const role = String(user && user.role ? user.role : 'user')
 .toLowerCase();
 
 return role === 'admin';
+}
+
+function hideLastUpdateText_() {
+const area = document.getElementById('lastUpdateText');
+
+if (!area) return;
+
+area.textContent = '';
+area.style.display = 'none';
 }
 
 /* =========================
@@ -187,10 +192,9 @@ if (permissions.adminPanel) {
 btnMore.style.display = 'flex';
 btnMore.classList.remove('disabled');
 
-  btnMore.innerHTML = `
-    <span class="home-menu-main">系統後台</span>
-    <span class="home-menu-sub">權限管理</span>
-  `;
+  btnMore.innerHTML =
+    '<span class="home-menu-main">系統後台</span>' +
+    '<span class="home-menu-sub">權限管理</span>';
 
   btnMore.onclick = function () {
     location.href = 'admin.html';
@@ -200,6 +204,14 @@ btnMore.classList.remove('disabled');
   btnMore.style.display = 'none';
 }
 
+}
+
+const canSeeLastUpdate = !!(permissions.updateTaoReport || permissions.adminPanel);
+
+if (canSeeLastUpdate) {
+loadTaoReportLastUpdate();
+} else {
+hideLastUpdateText_();
 }
 }
 
@@ -289,8 +301,10 @@ const cachedLastUpdate = localStorage.getItem('taoReportLastUpdate');
 
 if (cachedLastUpdate) {
 area.textContent = '最後更新：' + cachedLastUpdate;
+area.style.display = '';
 } else {
 area.textContent = '最後更新：讀取中...';
+area.style.display = '';
 }
 
 try {
@@ -300,16 +314,19 @@ action: 'getTaoReportLastUpdate'
 
 if (result.success && result.lastUpdate) {
   area.textContent = '最後更新：' + result.lastUpdate;
+  area.style.display = '';
   localStorage.setItem('taoReportLastUpdate', result.lastUpdate);
 } else {
   if (!cachedLastUpdate) {
     area.textContent = '最後更新：尚未更新';
+    area.style.display = '';
   }
 }
 
 } catch (err) {
 if (!cachedLastUpdate) {
 area.textContent = '最後更新：讀取失敗';
+area.style.display = '';
 }
 }
 }
