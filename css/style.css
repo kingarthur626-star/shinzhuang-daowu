@@ -1444,7 +1444,7 @@ font-size: 14px;
 min-height: -webkit-fill-available;
 }
 }
-```css
+
 /* =========================
    程式區塊：滿版 App 登入頁修正版
    功能說明：
@@ -1635,7 +1635,7 @@ min-height: -webkit-fill-available;
     font-size: 13px !important;
   }
 }
-```
+
 /* =========================
    程式區塊：滿版 App 登入頁間距修正版
    功能說明：
@@ -1726,7 +1726,7 @@ min-height: -webkit-fill-available;
   }
 }
 
-```css
+
 /* =========================
    程式區塊：登入頁底部連結間距修正
    功能說明：
@@ -2012,4 +2012,165 @@ min-height: -webkit-fill-available;
     height: 48px;
   }
 }
-```
+
+/* =========================
+   程式區塊：Android 表單頁高度壓縮版
+   功能說明：
+   修正 register.html / forgot.html 在 Android 手機上畫面太長的問題。
+   主要調整：
+   1. 縮小上方 Logo 與標題
+   2. 縮小表單卡片上下間距
+   3. 縮小輸入框、下拉選單、單選按鈕高度
+   4. 縮短各欄位之間的距離
+   5. 讓送出按鈕比較容易出現在畫面中
+========================= */
+
+.app-form-shell {
+  max-width: 460px !important;
+  padding:
+    calc(10px + env(safe-area-inset-top, 0px))
+    16px
+    calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* 上方返回登入按鈕區縮小 */
+.app-form-header {
+  margin-bottom: 8px !important;
+}
+
+.app-form-back {
+  min-width: 78px !important;
+  height: 36px !important;
+  font-size: 14px !important;
+}
+
+/* Logo 與標題區縮小 */
+.app-form-hero {
+  margin-bottom: 10px !important;
+}
+
+.app-form-logo {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 15px !important;
+  font-size: 24px !important;
+  margin-bottom: 6px !important;
+}
+
+.app-form-title {
+  font-size: 24px !important;
+  line-height: 1.2 !important;
+}
+
+/* 表單卡片縮小 */
+.app-form-card {
+  border-radius: 22px !important;
+  padding: 16px 16px 16px !important;
+}
+
+/* 每一組欄位間距縮小 */
+.app-form-card .form-group {
+  margin-bottom: 10px !important;
+}
+
+/* 欄位標籤縮小 */
+.app-form-card label,
+.app-form-card .label {
+  font-size: 14px !important;
+  margin-bottom: 6px !important;
+}
+
+/* 輸入框與下拉選單高度縮小 */
+.app-form-card input,
+.app-form-card select {
+  height: 44px !important;
+  border-radius: 13px !important;
+  font-size: 15px !important;
+  padding: 0 12px !important;
+}
+
+/* 組別按鈕縮小 */
+.app-form-card .radio-row {
+  gap: 7px !important;
+}
+
+.app-form-card .radio-item {
+  min-height: 40px !important;
+  border-radius: 13px !important;
+  font-size: 14px !important;
+  padding: 0 6px !important;
+}
+
+.app-form-card .radio-item input {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* 提示文字縮小並減少高度 */
+.app-form-card .hint {
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  margin-top: 5px !important;
+}
+
+/* 送出按鈕縮小一點 */
+.app-form-submit-btn {
+  min-height: 50px !important;
+  border-radius: 15px !important;
+  margin-top: 6px !important;
+  font-size: 17px !important;
+}
+
+/* 表單頁底部不要再多留空白 */
+.app-form-footer {
+  display: none !important;
+}
+
+/* Android 小高度螢幕再壓縮一次 */
+@media (max-height: 760px) {
+  .app-form-shell {
+    padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .app-form-header {
+    margin-bottom: 6px !important;
+  }
+
+  .app-form-logo {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 22px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .app-form-title {
+    font-size: 22px !important;
+  }
+
+  .app-form-hero {
+    margin-bottom: 8px !important;
+  }
+
+  .app-form-card {
+    padding: 14px 15px 14px !important;
+  }
+
+  .app-form-card .form-group {
+    margin-bottom: 9px !important;
+  }
+
+  .app-form-card input,
+  .app-form-card select {
+    height: 42px !important;
+  }
+
+  .app-form-card .radio-item {
+    min-height: 38px !important;
+  }
+
+  .app-form-submit-btn {
+    min-height: 48px !important;
+    font-size: 16px !important;
+  }
+}
