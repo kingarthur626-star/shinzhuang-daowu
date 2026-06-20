@@ -1019,3 +1019,50 @@ body {
   overscroll-behavior-y: contain;
 }
 
+/* =========================
+   PWA 更新提示列
+   功能說明：
+   當系統有新版本時，畫面下方會顯示提示，
+   使用者點擊「重新整理」後載入新版。
+========================= */
+
+.pwa-update-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 1200;
+
+  width: calc(100% - 28px);
+  max-width: 430px;
+
+  background: #173b5c;
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 12px 12px 12px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.22);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pwa-update-banner button {
+  border: none;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #173b5c;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pwa-update-banner button:active {
+  transform: scale(0.98);
+}
