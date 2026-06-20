@@ -1725,3 +1725,291 @@ min-height: -webkit-fill-available;
     padding-bottom: 18px !important;
   }
 }
+
+```css
+/* =========================
+   程式區塊：登入頁底部連結間距修正
+   功能說明：
+   讓登入按鈕與「申請帳號 / 忘記變更密碼」之間多空一行，
+   並讓底部不要貼太近。
+========================= */
+
+.app-login-footer {
+  margin-top: 28px !important;
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
+}
+
+
+/* =========================
+   程式區塊：申請帳號 / 忘記密碼 App 化頁面
+   功能說明：
+   讓 register.html 與 forgot.html 在 PWA 中看起來更像 App。
+   適用頁面：
+   1. register.html
+   2. forgot.html
+========================= */
+
+.app-form-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  background:
+    radial-gradient(circle at top left, rgba(47, 128, 237, 0.16) 0%, rgba(245, 247, 251, 0.96) 35%, #ffffff 100%);
+
+  color: #1f3b57;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-form-shell {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  padding:
+    calc(18px + env(safe-area-inset-top, 0px))
+    18px
+    calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+.app-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.app-form-back {
+  min-width: 88px;
+  height: 40px;
+
+  border: 1px solid #d7dde6;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #164568;
+
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  text-decoration: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-form-back:active {
+  transform: scale(0.98);
+}
+
+.app-form-header-title {
+  flex: 1;
+  text-align: center;
+
+  font-size: 20px;
+  font-weight: 900;
+  color: #143b63;
+  letter-spacing: 1px;
+
+  margin-right: 88px;
+}
+
+.app-form-hero {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.app-form-logo {
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 10px;
+  border-radius: 18px;
+
+  background: linear-gradient(135deg, #2f80ed, #4a90e2);
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+  font-weight: 900;
+
+  box-shadow: 0 12px 24px rgba(47, 128, 237, 0.24);
+}
+
+.app-form-title {
+  margin: 0;
+  color: #143b63;
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.app-form-card {
+  width: 100%;
+
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 24px;
+
+  padding: 22px 18px 22px;
+
+  box-shadow: 0 18px 42px rgba(32, 84, 147, 0.13);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.app-form-card .form-group {
+  margin-bottom: 16px;
+}
+
+.app-form-card label,
+.app-form-card .label {
+  font-size: 15px;
+  font-weight: 900;
+  color: #174869;
+  margin-bottom: 8px;
+}
+
+.app-form-card input,
+.app-form-card select {
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid #d7e1ec;
+  background: #ffffff;
+  font-size: 16px;
+}
+
+.app-form-card input:focus,
+.app-form-card select:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.14);
+}
+
+.app-form-card .hint {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 7px;
+}
+
+.app-form-card .radio-row {
+  gap: 8px;
+}
+
+.app-form-card .radio-item {
+  flex: 1;
+
+  min-height: 46px;
+  padding: 0 8px;
+
+  border: 1px solid #d7e1ec;
+  border-radius: 14px;
+  background: #ffffff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.app-form-card .radio-item input {
+  width: 18px;
+  height: 18px;
+}
+
+.app-form-submit-btn {
+  min-height: 56px;
+  border-radius: 16px;
+  margin-top: 8px;
+
+  background: linear-gradient(135deg, #2f80ed, #4a90e2);
+
+  font-size: 18px;
+  font-weight: 900;
+
+  box-shadow: 0 12px 22px rgba(47, 128, 237, 0.22);
+}
+
+.app-form-submit-btn:active {
+  transform: scale(0.99);
+}
+
+.app-form-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-bottom: 12px;
+}
+
+.app-form-footer .text-link {
+  font-size: 15px;
+  font-weight: 900;
+  color: #2f80ed;
+}
+
+@media (max-width: 380px) {
+  .app-form-shell {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .app-form-title {
+    font-size: 24px;
+  }
+
+  .app-form-card {
+    padding: 20px 16px 20px;
+  }
+
+  .app-form-card .radio-item {
+    font-size: 14px;
+    padding: 0 6px;
+  }
+}
+
+@media (max-height: 760px) {
+  .app-form-shell {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .app-form-hero {
+    margin-bottom: 14px;
+  }
+
+  .app-form-logo {
+    width: 52px;
+    height: 52px;
+    font-size: 25px;
+    margin-bottom: 8px;
+  }
+
+  .app-form-title {
+    font-size: 24px;
+  }
+
+  .app-form-card {
+    padding: 18px 16px 18px;
+  }
+
+  .app-form-card .form-group {
+    margin-bottom: 13px;
+  }
+
+  .app-form-card input,
+  .app-form-card select {
+    height: 48px;
+  }
+}
+```
