@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>系統後台｜帳號管理</title>
+
+  <link rel="stylesheet" href="css/style.css?v=20260620-3" />
+</head>
+
+<body>
+  <div class="page">
+    <div class="page-inner">
+
+      <div class="page-action-bar">
+        <button class="action-pill" id="backBtn" type="button">← 首頁</button>
+        <button class="action-pill logout" id="logoutBtn" type="button">登出</button>
+      </div>
+
+      <div class="card wide-card admin-card">
+        <h1>系統後台</h1>
+
+        <div class="small-text">帳號管理｜角色與啟用狀態</div>
+
+        <div id="adminMessage" class="message"></div>
+
+        <div class="admin-toolbar">
+          <input id="adminSearchInput" class="admin-search-input" type="text" placeholder="搜尋壇名、姓名、帳號" autocomplete="off" />
+          <button id="reloadAccountsBtn" class="admin-small-btn" type="button">重新整理</button>
+        </div>
+
+        <div id="adminStatsText" class="small-text admin-stats-text">讀取中...</div>
+
+        <div id="adminAccountList" class="admin-account-list">
+          <div class="small-text">讀取帳號中...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/config.js?v=20260620-1"></script>
+  <script src="js/api.js?v=20260620-1"></script>
+  <script src="js/common.js?v=20260620-1"></script>
+  <script src="js/admin.js?v=20260620-1"></script>
+</body>
+</html>
