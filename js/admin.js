@@ -306,12 +306,12 @@ async function updateOneAccount_(card) {
     return;
   }
 
-  const ok = confirm(
-    '確認更新此帳號？\n\\n' +
-    '帳號：' + account + '\n' +
-    '角色：' + role + '\n' +
-    '狀態：' + status
-  );
+const ok = confirm(
+'確認更新此帳號？' +
+' 帳號：' + account +
+'；角色：' + role +
+'；狀態：' + status
+);
 
   if (!ok) return;
 
@@ -376,7 +376,7 @@ function showAdminMessage_(text, type) {
 ========================= */
 function normalizeAdminText_(value) {
   return String(value || '')
-    .replace(/\\u3000/g, ' ')
+    .replace(/\u3000/g, ' ')
     .trim();
 }
 
