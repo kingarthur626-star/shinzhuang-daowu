@@ -2668,3 +2668,22 @@ padding-top: 28px !important;
 .app-form-logo {
 display: none !important;
 }
+
+/* =========================
+申請帳號頁：標題和「組別」之間多一行空白
+忘記 / 變更密碼頁：標題和「組別」之間多一行空白
+如果覺得空太多，把 22px 改成 18px。
+如果還想再空一點，把 22px 改成 28px。
+========================= */
+
+.app-form-hero {
+margin-bottom: 22px !important;
+}
+
+body:has(#registerForm) .app-form-hero {
+margin-bottom: 22px !important;
+}
+
+body:has(#forgotForm) .app-form-hero {
+margin-bottom: 22px !important;
+}
