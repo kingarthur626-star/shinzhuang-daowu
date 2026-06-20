@@ -2657,3 +2657,10 @@ width: 76% !important;
   }
 }
 
+/* =========================
+   Logo 上方會多一點空白 
+   可改成 20px 或 36px
+========================= */
+.app-login-header {
+padding-top: 28px !important;
+}
