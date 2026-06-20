@@ -2687,3 +2687,76 @@ margin-bottom: 22px !important;
 body:has(#forgotForm) .app-form-hero {
 margin-bottom: 22px !important;
 }
+
+/* 申請帳號 / 忘記密碼頁面高度舒展版 */
+body:has(#registerForm) .app-form-shell,
+body:has(#forgotForm) .app-form-shell {
+padding-top: calc(18px + env(safe-area-inset-top, 0px)) !important;
+padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+body:has(#registerForm) .app-form-header,
+body:has(#forgotForm) .app-form-header {
+margin-bottom: 12px !important;
+}
+
+body:has(#registerForm) .app-form-hero,
+body:has(#forgotForm) .app-form-hero {
+margin-bottom: 22px !important;
+}
+
+body:has(#registerForm) .app-form-title,
+body:has(#forgotForm) .app-form-title {
+font-size: 25px !important;
+line-height: 1.25 !important;
+}
+
+body:has(#registerForm) .app-form-card,
+body:has(#forgotForm) .app-form-card {
+padding: 22px 18px 24px !important;
+border-radius: 24px !important;
+}
+
+body:has(#registerForm) .app-form-card .form-group,
+body:has(#forgotForm) .app-form-card .form-group {
+margin-bottom: 14px !important;
+}
+
+body:has(#registerForm) .app-form-card label,
+body:has(#registerForm) .app-form-card .label,
+body:has(#forgotForm) .app-form-card label,
+body:has(#forgotForm) .app-form-card .label {
+font-size: 15px !important;
+margin-bottom: 7px !important;
+}
+
+body:has(#registerForm) .app-form-card input,
+body:has(#registerForm) .app-form-card select,
+body:has(#forgotForm) .app-form-card input,
+body:has(#forgotForm) .app-form-card select {
+height: 48px !important;
+border-radius: 14px !important;
+font-size: 15px !important;
+}
+
+body:has(#registerForm) .app-form-card .radio-item,
+body:has(#forgotForm) .app-form-card .radio-item {
+min-height: 42px !important;
+border-radius: 14px !important;
+font-size: 14px !important;
+}
+
+body:has(#registerForm) .app-form-card .hint,
+body:has(#forgotForm) .app-form-card .hint {
+font-size: 13px !important;
+line-height: 1.45 !important;
+margin-top: 6px !important;
+}
+
+body:has(#registerForm) .app-form-submit-btn,
+body:has(#forgotForm) .app-form-submit-btn {
+min-height: 52px !important;
+border-radius: 16px !important;
+margin-top: 10px !important;
+font-size: 17px !important;
+}
