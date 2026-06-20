@@ -2271,3 +2271,24 @@ body:has(#registerForm) .app-form-submit-btn {
   margin-top: 4px !important;
   font-size: 16px !important;
 }
+
+/* =========================
+   程式區塊：驗證碼載入體驗優化
+   功能說明：
+   配合新版 login.js。
+   讓驗證碼圖片在載入中或載入失敗時，
+   不會出現破圖或擠壓版面。
+========================= */
+
+.captcha-image {
+  object-fit: cover;
+  background: #f8fafc;
+}
+
+.captcha-refresh:disabled {
+  opacity: 0.75;
+  cursor: wait;
+  background: #eef2f7 !important;
+  color: #64748b !important;
+  border-color: #d7dde6 !important;
+}
