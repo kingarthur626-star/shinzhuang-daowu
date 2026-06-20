@@ -2494,3 +2494,91 @@ overflow-y: auto;
 -webkit-overflow-scrolling: touch;
 padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
+
+/* =========================
+程式區塊：admin 後台 Android / PWA 版面修正
+功能說明：
+修正 Android 手機上首頁按鈕消失、登出按鈕偏移、
+後台頁面橫向跑版，以及縮小儲存變更按鈕。
+========================= */
+
+body.admin-page {
+width: 100%;
+max-width: 100%;
+overflow-x: hidden;
+}
+
+body.admin-page .page {
+width: 100%;
+max-width: 100%;
+overflow-x: hidden;
+}
+
+body.admin-page .page-inner {
+width: 100%;
+max-width: 430px;
+margin: 0 auto;
+padding-left: 18px;
+padding-right: 18px;
+box-sizing: border-box;
+}
+
+body.admin-page .page-action-bar {
+width: 100%;
+max-width: 430px;
+margin: 0 auto;
+box-sizing: border-box;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 12px;
+left: 0;
+right: 0;
+}
+
+body.admin-page .page-action-bar .action-pill {
+min-width: 110px;
+max-width: 140px;
+height: 44px;
+padding: 0 18px;
+flex: 0 0 auto;
+}
+
+body.admin-page .admin-card {
+width: 100%;
+max-width: 100%;
+box-sizing: border-box;
+}
+
+body.admin-page .admin-account-card {
+width: 100%;
+box-sizing: border-box;
+}
+
+body.admin-page .admin-save-btn {
+width: 76%;
+max-width: 260px;
+height: 38px;
+margin-left: auto;
+margin-right: auto;
+display: block;
+font-size: 14px;
+border-radius: 12px;
+}
+
+@media (max-width: 390px) {
+body.admin-page .page-inner {
+padding-left: 14px;
+padding-right: 14px;
+}
+
+body.admin-page .page-action-bar .action-pill {
+min-width: 96px;
+height: 42px;
+font-size: 15px;
+}
+
+body.admin-page .admin-save-btn {
+width: 82%;
+}
+}
