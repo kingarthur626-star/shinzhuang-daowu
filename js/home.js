@@ -90,15 +90,9 @@ area.style.display = 'none';
 function bindHomeButtons() {
 const btnAnnual = document.getElementById('btnAnnual');
 const btnHistory = document.getElementById('btnHistory');
+const btnDutyActivityList = document.getElementById('btnDutyActivityList');
 const btnUpdate = document.getElementById('btnUpdate');
 const btnLogout = document.getElementById('btnLogout');
-const btnDutyActivityList = document.getElementById('btnDutyActivityList');
-
-if (btnDutyActivityList) {
-  btnDutyActivityList.addEventListener('click', function () {
-    location.href = 'duty-activity-list.html';
-  });
-}
 
 if (btnAnnual) {
 btnAnnual.addEventListener('click', function () {
@@ -110,6 +104,12 @@ if (btnHistory) {
 btnHistory.addEventListener('click', function () {
 location.href = 'history.html';
 });
+}
+
+if (btnDutyActivityList) {
+  btnDutyActivityList.addEventListener('click', function () {
+    location.href = 'duty-activity-list.html';
+  });
 }
 
 if (btnUpdate) {
