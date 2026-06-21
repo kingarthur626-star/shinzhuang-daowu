@@ -2973,3 +2973,21 @@ body.duty-activity-page .page-inner {
     grid-template-columns: 1fr;
   }
 }
+
+.admin-nav-row {
+  margin: 14px 0 4px;
+  display: flex;
+  justify-content: center;
+}
+
+.admin-nav-btn {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #2f80ed;
+  border-radius: 12px;
+  background: #eef5ff;
+  color: #2f80ed;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+}
