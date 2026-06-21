@@ -16,7 +16,7 @@
    每次 PWA 有重大更新時，請修改 CACHE_NAME。
    修改後，舊快取會被清除，使用者重新開啟後會載入新版。
 ========================= */
-const CACHE_NAME = 'xzds-pwa-cache-20260621-002';
+const CACHE_NAME = 'xzds-pwa-cache-20260621-003';
 
 
 /* =========================
@@ -36,7 +36,8 @@ const STATIC_ASSETS = [
   './history.html',
   './admin.html',
   './manifest.json',
-'./duty-activity-admin.html',
+  './duty-activity-admin.html',
+  './duty-activity-list.html',
   './css/style.css',
 
   './images/login-top-logo.png',
@@ -53,6 +54,7 @@ const STATIC_ASSETS = [
   './js/admin.js',
   './js/pwa.js'
   './js/duty-activity-admin.js',
+  './js/duty-activity-list.js',
 ];
 
 
