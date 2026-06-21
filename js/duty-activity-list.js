@@ -202,13 +202,13 @@ function bindActivityListCards_() {
       let text = title;
 
       if (dateRange) {
-        text += '\\n日期：' + dateRange;
+        text += '\n日期：' + dateRange;
       }
 
       if (note) {
-        text += '\\n\\n備註：' + note;
+        text += '\n\n備註：' + note;
       } else {
-        text += '\\n\\n備註：無';
+        text += '\n\\n備註：無';
       }
 
       alert(text);
