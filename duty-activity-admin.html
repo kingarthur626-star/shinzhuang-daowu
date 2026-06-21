@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>道務活動設定</title>
+
+  <link rel="stylesheet" href="css/style.css?v=20260621-1" />
+</head>
+
+<body class="duty-activity-page">
+  <div class="page">
+    <div class="page-inner">
+
+      <div class="page-action-bar">
+        <button class="action-pill" id="backBtn" type="button">← 後台</button>
+        <button class="action-pill logout" id="logoutBtn" type="button">登出</button>
+      </div>
+
+      <div class="card wide-card duty-activity-card">
+        <h1>道務活動設定</h1>
+
+        <div class="small-text">新增、修改與停用道務活動</div>
+
+        <div id="dutyActivityMessage" class="message"></div>
+
+        <form id="dutyActivityForm" class="duty-activity-form">
+          <input id="activityId" type="hidden" />
+
+          <div class="duty-form-grid two">
+            <div class="form-group">
+              <label for="dateStart">日期起</label>
+              <input id="dateStart" type="date" />
+            </div>
+
+            <div class="form-group">
+              <label for="dateEnd">日期訖</label>
+              <input id="dateEnd" type="date" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="activityName">道務活動</label>
+            <input id="activityName" type="text" list="activityNameList" placeholder="可選擇或自行輸入" autocomplete="off" />
+            <datalist id="activityNameList"></datalist>
+          </div>
+
+          <div class="duty-form-grid two">
+            <div class="form-group">
+              <label for="peopleMode">人數模式</label>
+              <select id="peopleMode">
+                <option value="手動">手動</option>
+                <option value="求道統計">求道統計</option>
+                <option value="法會統計">法會統計</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="peopleCount">人數</label>
+              <input id="peopleCount" type="number" min="0" step="1" placeholder="手動輸入" inputmode="numeric" />
+            </div>
+          </div>
+
+          <div class="duty-form-grid two">
+            <div class="form-group">
+              <label for="location">地點</label>
+              <input id="location" type="text" list="locationList" placeholder="可選擇或自行輸入" autocomplete="off" />
+              <datalist id="locationList"></datalist>
+            </div>
+
+            <div class="form-group">
+              <label for="planning">規劃</label>
+              <select id="planning">
+                <option value="">請選擇</option>
+                <option value="區">區</option>
+                <option value="一組">一組</option>
+                <option value="二組">二組</option>
+                <option value="三組">三組</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="activityStatus">狀態</label>
+            <select id="activityStatus">
+              <option value="啟用">啟用</option>
+              <option value="停用">停用</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="activityNote">備註</label>
+            <input id="activityNote" type="text" placeholder="可空白" autocomplete="off" />
+          </div>
+
+          <div class="duty-form-actions">
+            <button id="saveActivityBtn" class="btn duty-save-btn" type="submit">新增活動</button>
+            <button id="clearActivityBtn" class="duty-secondary-btn" type="button">清空</button>
+          </div>
+        </form>
+
+        <div class="duty-list-head">
+          <div id="dutyActivityStats" class="small-text">讀取中...</div>
+          <button id="reloadActivityBtn" class="admin-small-btn" type="button">重新整理</button>
+        </div>
+
+        <div id="dutyActivityList" class="duty-activity-list">
+          <div class="small-text">讀取道務活動中...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/config.js?v=20260620-1"></script>
+  <script src="js/api.js?v=20260620-1"></script>
+  <script src="js/common.js?v=20260620-1"></script>
+  <script src="js/duty-activity-admin.js?v=20260621-1"></script>
+</body>
+</html>
