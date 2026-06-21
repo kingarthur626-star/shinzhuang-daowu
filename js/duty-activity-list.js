@@ -199,28 +199,56 @@ card.addEventListener('click', function () {
   const dateRange = card.getAttribute('data-date-range') || '';
   const note = card.getAttribute('data-note') || '';
 
-  const lineBreak = String.fromCharCode(10);
-
-  const lines = [];
-
-  lines.push(title);
-  lines.push('');
-
-  if (dateRange) {
-    lines.push('日期：' + dateRange);
-  }
-
-  lines.push('');
-
-  if (note) {
-    lines.push('備註：' + note);
-  } else {
-    lines.push('備註：無');
-  }
-
-  alert(lines.join(lineBreak));
+  showActivityDetailModal_(title, dateRange, note);
 });
 
+}
+
+const closeBtn = document.getElementById('activityDetailCloseBtn');
+const modal = document.getElementById('activityDetailModal');
+
+if (closeBtn) {
+closeBtn.onclick = closeActivityDetailModal_;
+}
+
+if (modal) {
+const mask = modal.querySelector('.activity-detail-mask');
+
+if (mask) {
+  mask.onclick = closeActivityDetailModal_;
+}
+
+}
+}
+
+function showActivityDetailModal_(title, dateRange, note) {
+const modal = document.getElementById('activityDetailModal');
+const titleEl = document.getElementById('activityDetailTitle');
+const dateEl = document.getElementById('activityDetailDate');
+const noteEl = document.getElementById('activityDetailNote');
+
+if (!modal) return;
+
+if (titleEl) {
+titleEl.textContent = title || '';
+}
+
+if (dateEl) {
+dateEl.textContent = dateRange ? '日期：' + dateRange : '';
+}
+
+if (noteEl) {
+noteEl.textContent = '備註：' + (note || '無');
+}
+
+modal.style.display = 'flex';
+}
+
+function closeActivityDetailModal_() {
+const modal = document.getElementById('activityDetailModal');
+
+if (modal) {
+modal.style.display = 'none';
 }
 }
 
