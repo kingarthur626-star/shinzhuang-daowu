@@ -164,7 +164,7 @@ function createActivityListCardHtml_(item) {
   const dateStart = escapeActivityListHtml_(formatActivityListDate_(item.dateStart || ''));
   const dateRange = escapeActivityListHtml_(formatActivityListDateRange_(item.dateStart, item.dateEnd));
   const peopleCount = escapeActivityListHtml_(item.peopleCount || '—');
-  const location = escapeActivityListHtml_(item.location || '—');
+  const location = escapeActivityListHtml_(item.location || '');
   const planning = escapeActivityListHtml_(item.planning || '—');
   const note = escapeActivityListHtml_(item.note || '');
 
