@@ -86,20 +86,20 @@ function renderCombinedStats(result) {
   return `
     <div class="stat-card">
       <div id="annualLastUpdateText" class="last-update-mini annual-last-update-top"></div>
-<div class="stat-summary">
+      <div class="stat-summary">
         <div class="stat-box">
           <div class="stat-label">求道年度目標</div>
           <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'annualTarget'))}</div>
         </div>
 
         <div class="stat-box">
-          <div class="stat-label">求道今年累計</div>
-          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'ytdTotal'))}</div>
+          <div class="stat-label">法會年度目標</div>
+          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'annualTarget'))}</div>
         </div>
 
         <div class="stat-box">
-          <div class="stat-label">法會年度目標</div>
-          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'annualTarget'))}</div>
+          <div class="stat-label">求道今年累計</div>
+          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'ytdTotal'))}</div>
         </div>
 
         <div class="stat-box">
