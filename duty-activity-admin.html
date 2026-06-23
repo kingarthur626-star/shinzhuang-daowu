@@ -6,7 +6,19 @@
 
   <title>道務活動設定</title>
 
-  <link rel="stylesheet" href="css/style.css?v=20260622-8" />
+  <link rel="stylesheet" href="css/style.css?v=20260623-8" />
+
+  <style>
+    a.action-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+
 </head>
 
 <body class="duty-activity-page">
@@ -14,7 +26,7 @@
     <div class="page-inner">
 
       <div class="page-action-bar">
-        <button class="action-pill" id="backBtn" type="button">道務活動列表</button>
+        <a class="action-pill" id="backBtn" href="./duty-activity-list.html">道務活動列表</a>
         <button class="action-pill logout" id="logoutBtn" type="button">登出</button>
       </div>
 
@@ -63,6 +75,7 @@
                 <option value="手動">手動</option>
                 <option value="求道統計">求道統計</option>
                 <option value="法會統計">法會統計</option>
+                <option value="求道統計+壇名">求道統計+壇名</option>
               </select>
             </div>
 
@@ -131,6 +144,29 @@
   <script src="js/config.js?v=20260622-8"></script>
   <script src="js/api.js?v=20260622-8"></script>
   <script src="js/common.js?v=20260622-8"></script>
-  <script src="js/duty-activity-admin.js?v=20260622-10"></script>
+  <script src="js/duty-activity-admin.js?v=20260623-8"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var select = document.getElementById('peopleMode');
+      if (!select) return;
+
+      var exists = false;
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === '求道統計+壇名') {
+          exists = true;
+          break;
+        }
+      }
+
+      if (!exists) {
+        var option = document.createElement('option');
+        option.value = '求道統計+壇名';
+        option.textContent = '求道統計+壇名';
+        select.appendChild(option);
+      }
+    });
+  </script>
+
 </body>
 </html>
