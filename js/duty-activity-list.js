@@ -152,14 +152,14 @@ function renderDutyActivityList_() {
   const htmlParts = [];
 
   for (let i = 0; i < visibleDutyActivities.length; i++) {
-    htmlParts.push(createActivityListCardHtml_(visibleDutyActivities[i]));
+    htmlParts.push(createActivityListCardHtml_(visibleDutyActivities[i], i));
   }
 
   area.innerHTML = htmlParts.join('');
   bindActivityListCards_();
 }
 
-function createActivityListCardHtml_(item) {
+function createActivityListCardHtml_(item, index) {
   const title = escapeActivityListHtml_(item.activityName || '');
   const dateStart = escapeActivityListHtml_(formatActivityListDate_(item.dateStart || ''));
   const dateRange = escapeActivityListHtml_(formatActivityListDateRange_(item.dateStart, item.dateEnd));
@@ -169,7 +169,7 @@ function createActivityListCardHtml_(item) {
   const note = escapeActivityListHtml_(item.note || '');
 
   return '' +
-    '<div class="activity-list-item compact" data-note="' + note + '" data-date-range="' + dateRange + '" data-title="' + title + '">' +
+    '<div class="activity-list-item compact" data-index="' + String(index || 0) + '" data-date-range="' + dateRange + '" data-title="' + title + '">' +
       '<div class="activity-table-row activity-table-head">' +
         '<div>日期</div>' +
         '<div>道務活動</div>' +
@@ -197,7 +197,9 @@ const card = cards[i];
 card.addEventListener('click', function () {
   const title = card.getAttribute('data-title') || '';
   const dateRange = card.getAttribute('data-date-range') || '';
-  const note = card.getAttribute('data-note') || '';
+  const index = Number(card.getAttribute('data-index') || 0);
+  const item = visibleDutyActivities[index] || {};
+  const note = item.note || '';
 
   showActivityDetailModal_(title, dateRange, note);
 });
@@ -238,8 +240,8 @@ dateEl.textContent = dateRange ? '日期：' + dateRange : '';
 }
 
 if (noteEl) {
-noteEl.textContent = '備註：' + (note || '無');
-noteEl.style.whiteSpace = 'pre-line';
+noteEl.innerHTML = renderActivityDetailNoteHtml_(note);
+noteEl.style.whiteSpace = 'normal';
 }
 
 modal.style.display = 'flex';
@@ -284,6 +286,316 @@ function formatActivityListDateRange_(dateStart, dateEnd) {
   return startText + '～' + endText;
 }
 
+
+/* =========================
+函式名稱：renderActivityDetailNoteHtml_
+功能說明：
+將活動備註轉成美編後的 HTML。
+若為「求道統計+壇名」備註，會顯示成對齊表格。
+其他備註則維持一般文字顯示。
+========================= */
+function renderActivityDetailNoteHtml_(note) {
+  const text = normalizeActivityListText_(note);
+
+  if (!text) {
+    return '<div class="activity-detail-note-empty">備註：無</div>';
+  }
+
+  const parsed = parseReceiveByTempleNote_(text);
+
+  if (!parsed) {
+    return '<div class="activity-detail-note-text">備註：' + escapeActivityListHtml_(text) + '</div>';
+  }
+
+  injectActivityDetailNoteStyle_();
+
+  const rowsHtml = parsed.rows.map(function(row) {
+    const isTotal = row.temple === '合計';
+
+    return '' +
+      '<tr class="' + (isTotal ? 'is-total' : '') + '">' +
+        '<td class="temple-cell">' + escapeActivityListHtml_(row.temple) + '</td>' +
+        '<td>' + escapeActivityListHtml_(row.total) + '</td>' +
+        '<td>' + escapeActivityListHtml_(row.qian) + '</td>' +
+        '<td>' + escapeActivityListHtml_(row.kun) + '</td>' +
+        '<td>' + escapeActivityListHtml_(row.tong) + '</td>' +
+        '<td>' + escapeActivityListHtml_(row.nv) + '</td>' +
+      '</tr>';
+  }).join('');
+
+  return '' +
+    '<div class="activity-detail-note-card">' +
+      '<div class="activity-detail-note-title">備註：求道統計+壇名</div>' +
+      '<div class="activity-detail-note-meta">' +
+        '<div><span>期間</span>' + escapeActivityListHtml_(parsed.period || '') + '</div>' +
+        '<div><span>地點</span>' + escapeActivityListHtml_(parsed.location || '') + '</div>' +
+      '</div>' +
+      '<div class="activity-detail-note-table-wrap">' +
+        '<table class="activity-detail-note-table">' +
+          '<thead>' +
+            '<tr>' +
+              '<th>所屬佛堂</th>' +
+              '<th>人數</th>' +
+              '<th>乾</th>' +
+              '<th>坤</th>' +
+              '<th>童</th>' +
+              '<th>女</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>' +
+      '</div>' +
+    '</div>';
+}
+
+/* =========================
+函式名稱：parseReceiveByTempleNote_
+功能說明：
+解析「求道統計+壇名」備註。
+支援有換行 / tab 的新格式，也支援被瀏覽器壓成空白的一行格式。
+========================= */
+function parseReceiveByTempleNote_(note) {
+  const text = String(note || '').trim();
+
+  if (text.indexOf('求道統計+壇名') < 0 || text.indexOf('所屬佛堂') < 0) {
+    return null;
+  }
+
+  const periodMatch = text.match(/(?:期間|統計期間)：?\s*([0-9\/\-]+(?:～|~)[0-9\/\-]+)/);
+  const locationMatch = text.match(/(?:地點|輸入地點)：?\s*([^\s\n\t]+)/);
+
+  const period = periodMatch ? periodMatch[1] : '';
+  const location = locationMatch ? locationMatch[1] : '';
+
+  let rows = [];
+
+  if (text.indexOf('\t') >= 0 || text.indexOf('\n') >= 0) {
+    rows = parseReceiveByTempleNoteRowsFromLines_(text);
+  }
+
+  if (rows.length === 0) {
+    rows = parseReceiveByTempleNoteRowsFromFlatText_(text);
+  }
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return {
+    period: period,
+    location: location,
+    rows: rows
+  };
+}
+
+/* =========================
+函式名稱：parseReceiveByTempleNoteRowsFromLines_
+功能說明：
+從換行 / tab 格式解析各壇統計資料。
+========================= */
+function parseReceiveByTempleNoteRowsFromLines_(text) {
+  const rows = [];
+  const lines = String(text || '').split(/\r?\n/);
+
+  lines.forEach(function(line) {
+    const cleanLine = line.trim();
+
+    if (!cleanLine) return;
+    if (cleanLine.indexOf('所屬佛堂') >= 0) return;
+    if (cleanLine.indexOf('求道統計+壇名') >= 0) return;
+    if (cleanLine.indexOf('期間：') >= 0) return;
+    if (cleanLine.indexOf('地點：') >= 0) return;
+
+    const parts = cleanLine.split(/\t+|\s{2,}/).map(function(part) {
+      return part.trim();
+    }).filter(Boolean);
+
+    if (parts.length >= 6 && isActivityNoteNumber_(parts[1])) {
+      rows.push({
+        temple: parts[0],
+        total: parts[1],
+        qian: parts[2],
+        kun: parts[3],
+        tong: parts[4],
+        nv: parts[5]
+      });
+      return;
+    }
+
+    const match = cleanLine.match(/^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+
+    if (match) {
+      rows.push({
+        temple: match[1].trim(),
+        total: match[2],
+        qian: match[3],
+        kun: match[4],
+        tong: match[5],
+        nv: match[6]
+      });
+    }
+  });
+
+  return rows;
+}
+
+/* =========================
+函式名稱：parseReceiveByTempleNoteRowsFromFlatText_
+功能說明：
+當備註被壓成一整行時，仍嘗試解析各壇統計資料。
+========================= */
+function parseReceiveByTempleNoteRowsFromFlatText_(text) {
+  const rows = [];
+  const headerIndex = text.indexOf('所屬佛堂');
+
+  if (headerIndex < 0) return rows;
+
+  let body = text.substring(headerIndex);
+  body = body.replace(/^所屬佛堂\s*人數\s*乾\s*坤\s*童\s*女\s*/, '');
+  body = body.replace(/說明：[\s\S]*$/, '');
+  body = body.trim();
+
+  const regex = /([^\s]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/g;
+  let match;
+
+  while ((match = regex.exec(body)) !== null) {
+    rows.push({
+      temple: match[1],
+      total: match[2],
+      qian: match[3],
+      kun: match[4],
+      tong: match[5],
+      nv: match[6]
+    });
+  }
+
+  return rows;
+}
+
+/* =========================
+函式名稱：isActivityNoteNumber_
+功能說明：
+判斷文字是否為數字。
+========================= */
+function isActivityNoteNumber_(value) {
+  return /^\d+$/.test(String(value || '').trim());
+}
+
+/* =========================
+函式名稱：injectActivityDetailNoteStyle_
+功能說明：
+加入活動詳情備註表格樣式。
+========================= */
+function injectActivityDetailNoteStyle_() {
+  if (document.getElementById('activityDetailNoteStyle')) return;
+
+  const style = document.createElement('style');
+  style.id = 'activityDetailNoteStyle';
+  style.textContent = `
+    .activity-detail-note-card {
+      margin-top: 14px;
+      line-height: 1.45;
+      color: #1f2d3d;
+    }
+
+    .activity-detail-note-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #07365f;
+      margin-bottom: 10px;
+    }
+
+    .activity-detail-note-meta {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #34495e;
+    }
+
+    .activity-detail-note-meta span {
+      display: inline-block;
+      min-width: 42px;
+      margin-right: 8px;
+      font-weight: 800;
+      color: #07365f;
+    }
+
+    .activity-detail-note-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #d8e2ee;
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    .activity-detail-note-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+      font-size: 14px;
+      min-width: 420px;
+    }
+
+    .activity-detail-note-table th,
+    .activity-detail-note-table td {
+      border-bottom: 1px solid #e0e8f2;
+      border-right: 1px solid #e0e8f2;
+      padding: 8px 9px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .activity-detail-note-table th:last-child,
+    .activity-detail-note-table td:last-child {
+      border-right: 0;
+    }
+
+    .activity-detail-note-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .activity-detail-note-table th {
+      background: #f3f7fc;
+      color: #07365f;
+      font-weight: 800;
+    }
+
+    .activity-detail-note-table .temple-cell {
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .activity-detail-note-table tr.is-total td {
+      background: #f8fbff;
+      font-weight: 900;
+      color: #07365f;
+    }
+
+    .activity-detail-note-empty,
+    .activity-detail-note-text {
+      white-space: pre-line;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+      .activity-detail-note-title {
+        font-size: 17px;
+      }
+
+      .activity-detail-note-table {
+        font-size: 13px;
+        min-width: 390px;
+      }
+
+      .activity-detail-note-table th,
+      .activity-detail-note-table td {
+        padding: 7px 8px;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
 
 function showActivityListMessage_(text, type) {
   const el = document.getElementById('activityListMessage');
