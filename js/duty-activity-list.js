@@ -583,6 +583,8 @@ function renderActivityDetailNoteHtml_(note) {
 
   injectActivityDetailNoteStyle_();
 
+  const showChildColumns = parsed.columnMode !== 'qianKunOnly';
+
   const rowsHtml = parsed.rows.map(function(row) {
     const isTotal = row.temple === '合計';
 
@@ -592,10 +594,20 @@ function renderActivityDetailNoteHtml_(note) {
         '<td>' + escapeActivityListHtml_(row.total) + '</td>' +
         '<td>' + escapeActivityListHtml_(formatActivityNoteZeroBlank_(row.qian)) + '</td>' +
         '<td>' + escapeActivityListHtml_(formatActivityNoteZeroBlank_(row.kun)) + '</td>' +
-        '<td>' + escapeActivityListHtml_(formatActivityNoteZeroBlank_(row.tong)) + '</td>' +
-        '<td>' + escapeActivityListHtml_(formatActivityNoteZeroBlank_(row.nv)) + '</td>' +
+        (showChildColumns ? '<td>' + escapeActivityListHtml_(formatActivityNoteZeroBlank_(row.tong)) + '</td>' : '') +
+        (showChildColumns ? '<td>' + escapeActivityListHtml_(formatActivityNoteZeroBlank_(row.nv)) + '</td>' : '') +
       '</tr>';
   }).join('');
+
+  const tableHeaderHtml = '' +
+    '<tr>' +
+      '<th>所屬佛堂</th>' +
+      '<th>人數</th>' +
+      '<th>乾</th>' +
+      '<th>坤</th>' +
+      (showChildColumns ? '<th>童</th>' : '') +
+      (showChildColumns ? '<th>女</th>' : '') +
+    '</tr>';
 
   return '' +
     '<div class="activity-detail-note-card">' +
@@ -603,16 +615,7 @@ function renderActivityDetailNoteHtml_(note) {
       renderActivityDetailNoteMetaHtml_(parsed) +
       '<div class="activity-detail-note-table-wrap">' +
         '<table class="activity-detail-note-table">' +
-          '<thead>' +
-            '<tr>' +
-              '<th>所屬佛堂</th>' +
-              '<th>人數</th>' +
-              '<th>乾</th>' +
-              '<th>坤</th>' +
-              '<th>童</th>' +
-              '<th>女</th>' +
-            '</tr>' +
-          '</thead>' +
+          '<thead>' + tableHeaderHtml + '</thead>' +
           '<tbody>' + rowsHtml + '</tbody>' +
         '</table>' +
       '</div>' +
@@ -683,6 +686,7 @@ function parseReceiveByTempleNote_(note) {
     modeText: modeText,
     period: period,
     location: location,
+    columnMode: detectActivityNoteColumnMode_(text),
     rows: rows
   };
 }
@@ -721,7 +725,19 @@ function parseReceiveByTempleNoteRowsFromLines_(text) {
       return;
     }
 
-    const match = cleanLine.match(/^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+    if (parts.length >= 4 && isActivityNoteNumber_(parts[1])) {
+      rows.push({
+        temple: parts[0],
+        total: parts[1],
+        qian: parts[2],
+        kun: parts[3],
+        tong: '',
+        nv: ''
+      });
+      return;
+    }
+
+    let match = cleanLine.match(/^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
 
     if (match) {
       rows.push({
@@ -731,6 +747,20 @@ function parseReceiveByTempleNoteRowsFromLines_(text) {
         kun: match[4],
         tong: match[5],
         nv: match[6]
+      });
+      return;
+    }
+
+    match = cleanLine.match(/^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+
+    if (match) {
+      rows.push({
+        temple: match[1].trim(),
+        total: match[2],
+        qian: match[3],
+        kun: match[4],
+        tong: '',
+        nv: ''
       });
     }
   });
@@ -750,11 +780,17 @@ function parseReceiveByTempleNoteRowsFromFlatText_(text) {
   if (headerIndex < 0) return rows;
 
   let body = text.substring(headerIndex);
+  const columnMode = detectActivityNoteColumnMode_(text);
+
   body = body.replace(/^所屬佛堂\s*人數\s*乾\s*坤\s*童\s*女\s*/, '');
+  body = body.replace(/^所屬佛堂\s*人數\s*乾\s*坤\s*/, '');
   body = body.replace(/說明：[\s\S]*$/, '');
   body = body.trim();
 
-  const regex = /([^\s]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/g;
+  const regex = columnMode === 'qianKunOnly'
+    ? /([^\s]+)\s+(\d+)\s+(\d+)\s+(\d+)/g
+    : /([^\s]+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/g;
+
   let match;
 
   while ((match = regex.exec(body)) !== null) {
@@ -763,12 +799,33 @@ function parseReceiveByTempleNoteRowsFromFlatText_(text) {
       total: match[2],
       qian: match[3],
       kun: match[4],
-      tong: match[5],
-      nv: match[6]
+      tong: columnMode === 'qianKunOnly' ? '' : match[5],
+      nv: columnMode === 'qianKunOnly' ? '' : match[6]
     });
   }
 
   return rows;
+}
+
+
+/* =========================
+函式名稱：detectActivityNoteColumnMode_
+功能說明：
+判斷備註表格欄位模式。
+法會統計只顯示乾坤；求道統計與求道統計+壇名顯示乾坤童女。
+========================= */
+function detectActivityNoteColumnMode_(text) {
+  const value = String(text || '');
+
+  if (value.indexOf('所屬佛堂') >= 0 && value.indexOf('童') < 0 && value.indexOf('女') < 0) {
+    return 'qianKunOnly';
+  }
+
+  if (value.indexOf('法會統計') >= 0 && value.indexOf('求道統計') < 0) {
+    return 'qianKunOnly';
+  }
+
+  return 'qianKunTongNv';
 }
 
 /* =========================
