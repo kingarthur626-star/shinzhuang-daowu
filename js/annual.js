@@ -3,11 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (!user) return;
 
-  // 移除上方「2A_顓德 今年道務」
-  const annualTitle = document.getElementById('annualTitle');
-  if (annualTitle) {
-    annualTitle.style.display = 'none';
-  }
+  document.getElementById('annualTitle').textContent = user.temple + ' 今年道務';
 
   // 不顯示「壇名　姓名」
   const userInfo = document.getElementById('userInfo');
@@ -28,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   loadAnnualStats(user);
+  loadAnnualSharedLastUpdate_();
 });
 
 async function loadAnnualStats(user) {
@@ -48,6 +45,7 @@ async function loadAnnualStats(user) {
     }
 
     renderAnnualStats(result);
+    loadAnnualSharedLastUpdate_();
 
   } catch (err) {
     showMessage('annualMessage', 'error', err.message || '系統連線失敗，請稍後再試');
@@ -57,24 +55,25 @@ async function loadAnnualStats(user) {
 function renderAnnualStats(result) {
   const area = document.getElementById('annualStatsArea');
 
-  area.innerHTML = renderCombinedStats(result);
+  // 不顯示「2A_顓德｜2026 年 1月到6月 統計」
+  area.innerHTML = `
+    ${renderCombinedStats(result)}
+  `;
 }
 
 function renderCombinedStats(result) {
   const qiudao = result.data.qiudao;
   const fahui = result.data.fahui;
 
-  const displayTemple = getDisplayTempleName(result.temple);
-
   const monthRows = [];
 
   for (let month = 1; month <= result.monthLimit; month++) {
-    const qiudaoValue = formatZeroAsBlank(getMonthValue(qiudao, month));
-    const fahuiValue = formatZeroAsBlank(getMonthValue(fahui, month));
+    const qiudaoValue = getMonthValue(qiudao, month);
+    const fahuiValue = getMonthValue(fahui, month);
 
     monthRows.push(`
       <tr>
-        <td>${month}</td>
+        <td>${month}月</td>
         <td>${escapeHtml(qiudaoValue)}</td>
         <td>${escapeHtml(fahuiValue)}</td>
       </tr>
@@ -83,37 +82,38 @@ function renderCombinedStats(result) {
 
   return `
     <div class="stat-card">
-      <h2>2026道務統計 - ${escapeHtml(displayTemple)}</h2>
+      <h2>2026道務統計</h2>
+      <div id="annualLastUpdateText" class="last-update-mini"></div>
 
       <div class="stat-summary">
         <div class="stat-box">
           <div class="stat-label">求道年度目標</div>
-          <div class="stat-value">${escapeHtml(formatZeroAsBlank(getStatValue(qiudao, 'annualTarget')))}</div>
+          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'annualTarget'))}</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-label">求道今年累計</div>
+          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'ytdTotal'))}</div>
         </div>
 
         <div class="stat-box">
           <div class="stat-label">法會年度目標</div>
-          <div class="stat-value">${escapeHtml(formatZeroAsBlank(getStatValue(fahui, 'annualTarget')))}</div>
+          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'annualTarget'))}</div>
         </div>
 
         <div class="stat-box">
-          <div class="stat-label">求道累計</div>
-          <div class="stat-value">${escapeHtml(formatZeroAsBlank(getStatValue(qiudao, 'ytdTotal')))}</div>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-label">法會累計</div>
-          <div class="stat-value">${escapeHtml(formatZeroAsBlank(getStatValue(fahui, 'ytdTotal')))}</div>
+          <div class="stat-label">法會今年累計</div>
+          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'ytdTotal'))}</div>
         </div>
 
         <div class="stat-box">
           <div class="stat-label">求道達成率</div>
-          <div class="stat-value">${escapeHtml(formatZeroAsBlank(getStatValue(qiudao, 'achievementRate')))}</div>
+          <div class="stat-value">${escapeHtml(getStatValue(qiudao, 'achievementRate'))}</div>
         </div>
 
         <div class="stat-box">
           <div class="stat-label">法會達成率</div>
-          <div class="stat-value">${escapeHtml(formatZeroAsBlank(getStatValue(fahui, 'achievementRate')))}</div>
+          <div class="stat-value">${escapeHtml(getStatValue(fahui, 'achievementRate'))}</div>
         </div>
       </div>
 
@@ -135,7 +135,7 @@ function renderCombinedStats(result) {
 
 function getMonthValue(item, month) {
   if (!item || !item.found || !item.months) {
-    return '';
+    return '0';
   }
 
   const monthData = item.months.find(function(m) {
@@ -143,45 +143,63 @@ function getMonthValue(item, month) {
   });
 
   if (!monthData) {
-    return '';
+    return '0';
   }
 
-  return monthData.value || '';
+  return monthData.value || '0';
 }
 
 function getStatValue(item, key) {
   if (!item || !item.found) {
-    return '';
+    return '0';
   }
 
-  return item[key] || '';
+  return item[key] || '0';
 }
 
-function formatZeroAsBlank(value) {
-  const text = String(value || '').trim();
+/* =========================
+函式名稱：loadAnnualSharedLastUpdate_
+功能說明：
+讀取與首頁相同來源的「最後更新」時間。
+來源：
+1. localStorage：taoReportLastUpdate
+2. 後端 action：getTaoReportLastUpdate
+========================= */
+async function loadAnnualSharedLastUpdate_() {
+  const cachedLastUpdate = localStorage.getItem('taoReportLastUpdate');
+  updateAnnualLastUpdateText_(cachedLastUpdate || '讀取中...');
 
-  if (!text) return '';
+  try {
+    const result = await callApi({
+      action: 'getTaoReportLastUpdate'
+    });
 
-  const normalized = text
-    .replace(/,/g, '')
-    .replace(/\s/g, '');
+    if (result.success && result.lastUpdate) {
+      localStorage.setItem('taoReportLastUpdate', result.lastUpdate);
+      updateAnnualLastUpdateText_(result.lastUpdate);
+      return;
+    }
 
-  if (
-    normalized === '0' ||
-    normalized === '0.0' ||
-    normalized === '0.00' ||
-    normalized === '0%' ||
-    normalized === '0.0%' ||
-    normalized === '0.00%'
-  ) {
-    return '';
+    if (!cachedLastUpdate) {
+      updateAnnualLastUpdateText_('尚未更新');
+    }
+
+  } catch (err) {
+    if (!cachedLastUpdate) {
+      updateAnnualLastUpdateText_('讀取失敗');
+    }
   }
-
-  return text;
 }
 
-function getDisplayTempleName(temple) {
-  return String(temple || '')
-    .trim()
-    .replace(/^[123][ABCabc][_－\-\s]*/g, '');
+/* =========================
+函式名稱：updateAnnualLastUpdateText_
+功能說明：
+更新今年道務頁「最後更新」小字。
+========================= */
+function updateAnnualLastUpdateText_(text) {
+  const area = document.getElementById('annualLastUpdateText');
+
+  if (!area) return;
+
+  area.textContent = '最後更新：' + (text || '尚未更新');
 }
