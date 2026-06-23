@@ -112,7 +112,7 @@ async function loadDutyActivityList_() {
       throw new Error(result.message || '讀取失敗');
     }
 
-    visibleDutyActivities = result.activities || [];
+    visibleDutyActivities = sortDutyActivitiesByDateDesc_(result.activities || []);
 
     renderDutyActivityList_();
 
@@ -161,7 +161,7 @@ function renderDutyActivityList_() {
 
 function createActivityListCardHtml_(item) {
   const title = escapeActivityListHtml_(item.activityName || '');
-  const dateStart = escapeActivityListHtml_(formatActivityListDate_(item.dateStart || ''));
+  const dateStart = formatActivityListDateHtml_(item.dateStart || '');
   const dateRange = escapeActivityListHtml_(formatActivityListDateRange_(item.dateStart, item.dateEnd));
   const peopleCount = escapeActivityListHtml_(item.peopleCount || '—');
   const location = escapeActivityListHtml_(item.location || '');
@@ -253,26 +253,18 @@ modal.style.display = 'none';
 }
 
 function formatActivityListDate_(value) {
-  const text = normalizeActivityListText_(value);
+  const parts = parseActivityListDateParts_(value);
 
-  if (!text) return '';
-
-  const compact = text.replace(/[\/\-\.]/g, '');
-
-  if (/^\d{8}$/.test(compact)) {
-    return compact.substring(4, 6) + '/' + compact.substring(6, 8);
+  if (!parts) {
+    return normalizeActivityListText_(value);
   }
 
-  if (/^\d{4}[\/\-\.]\d{2}[\/\-\.]\d{2}$/.test(text)) {
-    return text.substring(5).replace(/-/g, '/').replace(/\./g, '/');
-  }
-
-  return text;
+  return parts.year + '/' + parts.month + '/' + parts.day;
 }
 
 function formatActivityListDateRange_(dateStart, dateEnd) {
-  const startText = normalizeActivityListText_(dateStart);
-  const endText = normalizeActivityListText_(dateEnd);
+  const startText = formatActivityListDate_(dateStart);
+  const endText = formatActivityListDate_(dateEnd);
 
   if (!startText) return '';
 
@@ -283,6 +275,86 @@ function formatActivityListDateRange_(dateStart, dateEnd) {
   return startText + '～' + endText;
 }
 
+/* =========================
+函式名稱：sortDutyActivitiesByDateDesc_
+功能說明：
+將道務活動依照「日期起」排序。
+日期越新的活動排越上面，日期越舊的活動排越下面。
+========================= */
+function sortDutyActivitiesByDateDesc_(activities) {
+  return activities.slice().sort(function(a, b) {
+    const timeA = getActivityListDateTime_(a && a.dateStart);
+    const timeB = getActivityListDateTime_(b && b.dateStart);
+
+    if (timeA !== timeB) {
+      return timeB - timeA;
+    }
+
+    const idA = Number((a && a.id) || 0);
+    const idB = Number((b && b.id) || 0);
+
+    return idB - idA;
+  });
+}
+
+/* =========================
+函式名稱：getActivityListDateTime_
+功能說明：
+將活動日期轉成排序用時間戳。
+========================= */
+function getActivityListDateTime_(value) {
+  const parts = parseActivityListDateParts_(value);
+
+  if (!parts) {
+    return 0;
+  }
+
+  return new Date(Number(parts.year), Number(parts.month) - 1, Number(parts.day)).getTime();
+}
+
+/* =========================
+函式名稱：parseActivityListDateParts_
+功能說明：
+解析 2026/04/04、2026-04-04、20260404 等日期格式。
+========================= */
+function parseActivityListDateParts_(value) {
+  const text = normalizeActivityListText_(value);
+
+  if (!text) return null;
+
+  const compact = text.replace(/[\/\-\.]/g, '');
+
+  if (/^\d{8}$/.test(compact)) {
+    return {
+      year: compact.substring(0, 4),
+      month: compact.substring(4, 6),
+      day: compact.substring(6, 8)
+    };
+  }
+
+  return null;
+}
+
+/* =========================
+函式名稱：formatActivityListDateHtml_
+功能說明：
+活動列表日期欄位顯示年度，方便辨識跨年度活動。
+手機上會分成兩行顯示：
+2026
+04/04
+========================= */
+function formatActivityListDateHtml_(value) {
+  const parts = parseActivityListDateParts_(value);
+
+  if (!parts) {
+    return escapeActivityListHtml_(normalizeActivityListText_(value));
+  }
+
+  return '' +
+    '<span class="activity-list-date-year">' + escapeActivityListHtml_(parts.year) + '</span>' +
+    '<br>' +
+    '<span class="activity-list-date-md">' + escapeActivityListHtml_(parts.month + '/' + parts.day) + '</span>';
+}
 
 function showActivityListMessage_(text, type) {
   const el = document.getElementById('activityListMessage');
