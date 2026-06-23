@@ -36,6 +36,7 @@ templeEl.textContent = user.temple || '未取得壇名';
 hideLastUpdateText_();
 
 bindHomeButtons();
+applyRecentDutyButtonText_();
 loadHomePermissions(user);
 }
 
@@ -414,4 +415,30 @@ btn.innerHTML =
   '<span class="home-menu-sub">即時同步</span>';
 
 }
+}
+
+
+/* =========================
+函式名稱：applyRecentDutyButtonText_
+功能說明：
+將首頁「近年道務」按鈕文字改為「近五年道務」。
+若 HTML 內仍寫舊文字，載入時由 JS 自動修正。
+========================= */
+function applyRecentDutyButtonText_() {
+  const btnHistory = document.getElementById('btnHistory');
+
+  if (!btnHistory) return;
+
+  const mainText = btnHistory.querySelector('.home-menu-main');
+  const subText = btnHistory.querySelector('.home-menu-sub');
+
+  if (mainText) {
+    mainText.textContent = '近五年道務';
+  } else {
+    btnHistory.textContent = '近五年道務';
+  }
+
+  if (subText) {
+    subText.textContent = '歷年比較';
+  }
 }

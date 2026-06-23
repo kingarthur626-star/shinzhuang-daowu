@@ -117,7 +117,7 @@ function renderRecentDutyStats(result) {
     area.innerHTML = `
       <div class="stat-card">
         <div class="small-text">
-          ${escapeHtml(result.message || '查無近年道務資料')}
+          ${escapeHtml(result.message || '查無近五年道務資料')}
         </div>
       </div>
     `;
@@ -151,8 +151,6 @@ function renderRecentDutyStats(result) {
 
   area.innerHTML = `
     <div class="stat-card">
-      <div class="duty-type-badge duty-type-qiudao">求道</div>
-
       ${renderLineChart(rows, 'qiudao', '求道')}
 
       <div class="table-scroll">
@@ -173,8 +171,6 @@ function renderRecentDutyStats(result) {
     </div>
 
     <div class="stat-card">
-      <div class="duty-type-badge duty-type-fahui">法會</div>
-
       ${renderLineChart(rows, 'fahui', '法會')}
 
       <div class="table-scroll">
