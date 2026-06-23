@@ -599,11 +599,8 @@ function renderActivityDetailNoteHtml_(note) {
 
   return '' +
     '<div class="activity-detail-note-card">' +
-      '<div class="activity-detail-note-title">備註：求道統計+壇名</div>' +
-      '<div class="activity-detail-note-meta">' +
-        '<div><span>期間</span>' + escapeActivityListHtml_(parsed.period || '') + '</div>' +
-        '<div><span>地點</span>' + escapeActivityListHtml_(parsed.location || '') + '</div>' +
-      '</div>' +
+      '<div class="activity-detail-note-title">備註：' + escapeActivityListHtml_(parsed.modeText || '系統統計') + '</div>' +
+      renderActivityDetailNoteMetaHtml_(parsed) +
       '<div class="activity-detail-note-table-wrap">' +
         '<table class="activity-detail-note-table">' +
           '<thead>' +
@@ -622,6 +619,31 @@ function renderActivityDetailNoteHtml_(note) {
     '</div>';
 }
 
+
+/* =========================
+函式名稱：renderActivityDetailNoteMetaHtml_
+功能說明：
+備註表格上方資訊列。
+沒有日期時不顯示日期；有地點才顯示地點。
+========================= */
+function renderActivityDetailNoteMetaHtml_(parsed) {
+  const parts = [];
+
+  if (parsed.period) {
+    parts.push('<div><span>期間</span>' + escapeActivityListHtml_(parsed.period) + '</div>');
+  }
+
+  if (parsed.location) {
+    parts.push('<div><span>地點</span>' + escapeActivityListHtml_(parsed.location) + '</div>');
+  }
+
+  if (parts.length === 0) {
+    return '';
+  }
+
+  return '<div class="activity-detail-note-meta">' + parts.join('') + '</div>';
+}
+
 /* =========================
 函式名稱：parseReceiveByTempleNote_
 功能說明：
@@ -631,13 +653,15 @@ function renderActivityDetailNoteHtml_(note) {
 function parseReceiveByTempleNote_(note) {
   const text = String(note || '').trim();
 
-  if (text.indexOf('求道統計+壇名') < 0 || text.indexOf('所屬佛堂') < 0) {
+  if (text.indexOf('所屬佛堂') < 0) {
     return null;
   }
 
+  const modeMatch = text.match(/(求道統計\+壇名|求道統計|法會統計)/);
   const periodMatch = text.match(/(?:期間|統計期間)：?\s*([0-9\/\-]+(?:～|~)[0-9\/\-]+)/);
   const locationMatch = text.match(/(?:地點|輸入地點)：?\s*([^\s\n\t]+)/);
 
+  const modeText = modeMatch ? modeMatch[1] : '系統統計';
   const period = periodMatch ? periodMatch[1] : '';
   const location = locationMatch ? locationMatch[1] : '';
 
@@ -656,6 +680,7 @@ function parseReceiveByTempleNote_(note) {
   }
 
   return {
+    modeText: modeText,
     period: period,
     location: location,
     rows: rows
