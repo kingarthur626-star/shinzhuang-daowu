@@ -587,9 +587,10 @@ function renderActivityDetailNoteHtml_(note) {
 
   const rowsHtml = parsed.rows.map(function(row) {
     const isTotal = row.temple === '合計';
+    const isGroupSubtotal = row.temple.indexOf('小計') >= 0;
 
     return '' +
-      '<tr class="' + (isTotal ? 'is-total' : '') + '">' +
+      '<tr class="' + (isTotal ? 'is-total' : '') + (isGroupSubtotal ? ' is-group-subtotal' : '') + '">' +
         '<td class="temple-cell">' + escapeActivityListHtml_(row.temple) + '</td>' +
         '<td>' + escapeActivityListHtml_(row.total) + '</td>' +
         '<td>' + escapeActivityListHtml_(formatActivityNoteZeroBlank_(row.qian)) + '</td>' +
@@ -632,7 +633,15 @@ function renderActivityDetailNoteHtml_(note) {
 function renderActivityDetailNoteMetaHtml_(parsed) {
   const parts = [];
 
-  if (parsed.period) {
+  if (parsed.settingPeriod) {
+    parts.push('<div><span>設定期間</span>' + escapeActivityListHtml_(parsed.settingPeriod) + '</div>');
+  }
+
+  if (parsed.dataPeriod) {
+    parts.push('<div><span>資料期間</span>' + escapeActivityListHtml_(parsed.dataPeriod) + '</div>');
+  }
+
+  if (!parsed.settingPeriod && parsed.period) {
     parts.push('<div><span>期間</span>' + escapeActivityListHtml_(parsed.period) + '</div>');
   }
 
@@ -646,6 +655,7 @@ function renderActivityDetailNoteMetaHtml_(parsed) {
 
   return '<div class="activity-detail-note-meta">' + parts.join('') + '</div>';
 }
+
 
 /* =========================
 函式名稱：parseReceiveByTempleNote_
@@ -661,10 +671,14 @@ function parseReceiveByTempleNote_(note) {
   }
 
   const modeMatch = text.match(/(求道統計\+壇名|求道統計|法會統計)/);
+  const settingPeriodMatch = text.match(/設定期間：?\s*([^\n\t]+)/);
+  const dataPeriodMatch = text.match(/資料期間：?\s*([^\n\t]+)/);
   const periodMatch = text.match(/(?:期間|統計期間)：?\s*([0-9\/\-]+(?:～|~)[0-9\/\-]+)/);
   const locationMatch = text.match(/(?:地點|輸入地點)：?\s*([^\s\n\t]+)/);
 
   const modeText = modeMatch ? modeMatch[1] : '系統統計';
+  const settingPeriod = settingPeriodMatch ? settingPeriodMatch[1].trim() : '';
+  const dataPeriod = dataPeriodMatch ? dataPeriodMatch[1].trim() : '';
   const period = periodMatch ? periodMatch[1] : '';
   const location = locationMatch ? locationMatch[1] : '';
 
@@ -685,6 +699,8 @@ function parseReceiveByTempleNote_(note) {
   return {
     modeText: modeText,
     period: period,
+    settingPeriod: settingPeriod,
+    dataPeriod: dataPeriod,
     location: location,
     columnMode: detectActivityNoteColumnMode_(text),
     rows: rows
@@ -785,6 +801,8 @@ function parseReceiveByTempleNoteRowsFromFlatText_(text) {
   body = body.replace(/^所屬佛堂\s*人數\s*乾\s*坤\s*童\s*女\s*/, '');
   body = body.replace(/^所屬佛堂\s*人數\s*乾\s*坤\s*/, '');
   body = body.replace(/說明：[\s\S]*$/, '');
+  body = body.replace(/^設定期間：[^\s]+\s*/, '');
+  body = body.replace(/^資料期間：[^\s]+\s*/, '');
   body = body.trim();
 
   const regex = columnMode === 'qianKunOnly'
@@ -888,7 +906,7 @@ function injectActivityDetailNoteStyle_() {
 
     .activity-detail-note-meta span {
       display: inline-block;
-      min-width: 38px;
+      min-width: 68px;
       margin-right: 6px;
       font-weight: 800;
       color: #07365f;
@@ -947,6 +965,13 @@ function injectActivityDetailNoteStyle_() {
     .activity-detail-note-table td:not(.temple-cell),
     .activity-detail-note-table th:not(:first-child) {
       min-width: 34px;
+    }
+
+
+    .activity-detail-note-table tr.is-group-subtotal td {
+      background: #fff8e8;
+      font-weight: 900;
+      color: #8a5200;
     }
 
     .activity-detail-note-table tr.is-total td {
