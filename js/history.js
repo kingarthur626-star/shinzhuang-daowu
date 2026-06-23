@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   loadTempleOptions(user);
-  loadHistorySharedLastUpdate_();
 });
 
 async function loadTempleOptions(user) {
@@ -152,7 +151,7 @@ function renderRecentDutyStats(result) {
 
   area.innerHTML = `
     <div class="stat-card">
-      <h2>${escapeHtml(yearRangeText)} <span class="title-qiudao">求道</span> - ${escapeHtml(templeName)}</h2>
+      <div class="duty-type-badge duty-type-qiudao">求道</div>
 
       ${renderLineChart(rows, 'qiudao', '求道')}
 
@@ -161,7 +160,7 @@ function renderRecentDutyStats(result) {
           <thead>
             <tr>
               <th>年度</th>
-              <th>求道</th>
+              <th><span class="history-highlight history-highlight-qiudao">求道</span></th>
               <th>累計</th>
               <th>達成</th>
             </tr>
@@ -174,7 +173,7 @@ function renderRecentDutyStats(result) {
     </div>
 
     <div class="stat-card">
-      <h2>${escapeHtml(yearRangeText)} <span class="title-fahui">法會</span> - ${escapeHtml(templeName)}</h2>
+      <div class="duty-type-badge duty-type-fahui">法會</div>
 
       ${renderLineChart(rows, 'fahui', '法會')}
 
@@ -183,7 +182,7 @@ function renderRecentDutyStats(result) {
           <thead>
             <tr>
               <th>年度</th>
-              <th>法會</th>
+              <th><span class="history-highlight history-highlight-fahui">法會</span></th>
               <th>累計</th>
               <th>達成</th>
             </tr>
@@ -386,7 +385,7 @@ function formatZeroAsBlank(value) {
 
 function getYearRangeTextFromRows(rows) {
   if (!rows || rows.length === 0) {
-    return '近年道務';
+    return '近五年道務';
   }
 
   const years = rows.map(function(row) {
@@ -396,58 +395,11 @@ function getYearRangeTextFromRows(rows) {
   });
 
   if (years.length === 0) {
-    return '近年道務';
+    return '近五年道務';
   }
 
   const yearStart = Math.min.apply(null, years);
   const yearEnd = Math.max.apply(null, years);
 
   return yearStart + '-' + yearEnd;
-}
-
-/* =========================
-函式名稱：loadHistorySharedLastUpdate_
-功能說明：
-讀取與首頁相同來源的「最後更新」時間。
-來源：
-1. localStorage：taoReportLastUpdate
-2. 後端 action：getTaoReportLastUpdate
-========================= */
-async function loadHistorySharedLastUpdate_() {
-  const cachedLastUpdate = localStorage.getItem('taoReportLastUpdate');
-  updateHistoryLastUpdateText_(cachedLastUpdate || '讀取中...');
-
-  try {
-    const result = await callApi({
-      action: 'getTaoReportLastUpdate'
-    });
-
-    if (result.success && result.lastUpdate) {
-      localStorage.setItem('taoReportLastUpdate', result.lastUpdate);
-      updateHistoryLastUpdateText_(result.lastUpdate);
-      return;
-    }
-
-    if (!cachedLastUpdate) {
-      updateHistoryLastUpdateText_('尚未更新');
-    }
-
-  } catch (err) {
-    if (!cachedLastUpdate) {
-      updateHistoryLastUpdateText_('讀取失敗');
-    }
-  }
-}
-
-/* =========================
-函式名稱：updateHistoryLastUpdateText_
-功能說明：
-更新近年道務頁「最後更新」小字。
-========================= */
-function updateHistoryLastUpdateText_(text) {
-  const area = document.getElementById('historyLastUpdateText');
-
-  if (!area) return;
-
-  area.textContent = '最後更新：' + (text || '尚未更新');
 }
